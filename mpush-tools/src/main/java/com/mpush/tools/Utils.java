@@ -19,7 +19,7 @@
 
 package com.mpush.tools;
 
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.thread.NamedThreadFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SingleThreadEventLoop;
@@ -57,7 +57,7 @@ public final class Utils {
     }
 
     public static boolean useNettyEpoll() {
-        if (CC.mp.core.useNettyEpoll()) {
+        if (IConfig.mp.core.useNettyEpoll()) {
             try {
                 Class.forName("io.netty.channel.epoll.Native");
                 return true;

@@ -26,7 +26,7 @@ import com.mpush.monitor.data.MonitorResult;
 import com.mpush.monitor.data.ResultCollector;
 import com.mpush.tools.Utils;
 import com.mpush.tools.common.JVMUtil;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.log.Logs;
 import com.mpush.tools.thread.ThreadNames;
 
@@ -40,10 +40,10 @@ public class MonitorService extends BaseService implements Monitor, Runnable {
             THIRD_DUMP_JSTACK_LOAD_AVG = 6,
             FIRST_DUMP_JMAP_LOAD_AVG = 4;
 
-    private static final String dumpLogDir = CC.mp.monitor.dump_dir;
-    private static final boolean dumpEnabled = CC.mp.monitor.dump_stack;
-    private static final boolean printLog = CC.mp.monitor.print_log;
-    private static final long dumpPeriod = CC.mp.monitor.dump_period.getSeconds();
+    private static final String dumpLogDir = IConfig.mp.monitor.dump_dir;
+    private static final boolean dumpEnabled = IConfig.mp.monitor.dump_stack;
+    private static final boolean printLog = IConfig.mp.monitor.print_log;
+    private static final long dumpPeriod = IConfig.mp.monitor.dump_period.getSeconds();
 
     private volatile boolean dumpFirstJstack = false;
     private volatile boolean dumpSecondJstack = false;

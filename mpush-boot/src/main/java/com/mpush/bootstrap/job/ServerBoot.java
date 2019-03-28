@@ -48,7 +48,7 @@ public final class ServerBoot extends BootJob {
                 Logs.Console.info("start {} success on:{}", server.getClass().getSimpleName(), args[0]);
                 if (node != null) {//注册应用到zk
                     ServiceRegistryFactory.create().register(node);
-                    Logs.RSD.info("register {} to srd success.", node);
+                    Logs.SRD.info("register {} to srd success.", node);
                 }
                 startNext();
             }

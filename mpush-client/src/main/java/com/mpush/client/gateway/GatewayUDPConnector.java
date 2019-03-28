@@ -29,9 +29,9 @@ import com.mpush.common.MessageDispatcher;
 import com.mpush.netty.udp.UDPChannelHandler;
 import com.mpush.netty.udp.NettyUDPConnector;
 import com.mpush.tools.Utils;
-import com.mpush.tools.config.CC;
-import com.mpush.tools.config.CC.mp.net.rcv_buf;
-import com.mpush.tools.config.CC.mp.net.snd_buf;
+import com.mpush.tools.config.IConfig;
+import com.mpush.tools.config.IConfig.mp.net.rcv_buf;
+import com.mpush.tools.config.IConfig.mp.net.snd_buf;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelOption;
@@ -50,7 +50,7 @@ public final class GatewayUDPConnector extends NettyUDPConnector {
     private MPushClient mPushClient;
 
     public GatewayUDPConnector(MPushClient mPushClient) {
-        super(CC.mp.net.gateway_client_port);
+        super(IConfig.mp.net.gateway_client_port);
         this.mPushClient = mPushClient;
         this.messageDispatcher = new MessageDispatcher(POLICY_LOG);
     }
@@ -61,7 +61,7 @@ public final class GatewayUDPConnector extends NettyUDPConnector {
         messageDispatcher.register(Command.OK, () -> new GatewayOKHandler(mPushClient));
         messageDispatcher.register(Command.ERROR, () -> new GatewayErrorHandler(mPushClient));
         channelHandler = new UDPChannelHandler(messageDispatcher);
-        channelHandler.setMulticastAddress(Utils.getInetAddress(CC.mp.net.gateway_client_multicast));
+        channelHandler.setMulticastAddress(Utils.getInetAddress(IConfig.mp.net.gateway_client_multicast));
         channelHandler.setNetworkInterface(Utils.getLocalNetworkInterface());
     }
 

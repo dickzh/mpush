@@ -27,8 +27,8 @@ import com.mpush.tools.thread.NamedPoolThreadFactory;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import static com.mpush.tools.config.CC.mp.thread.pool.ack_timer;
-import static com.mpush.tools.config.CC.mp.thread.pool.push_client;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.ack_timer;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.push_client;
 import static com.mpush.tools.thread.ThreadNames.T_ARK_REQ_TIMER;
 import static com.mpush.tools.thread.ThreadNames.T_PUSH_CLIENT_TIMER;
 

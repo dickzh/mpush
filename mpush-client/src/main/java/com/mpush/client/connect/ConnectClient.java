@@ -39,7 +39,7 @@ public class ConnectClient extends NettyTCPClient {
     }
 
     @Subscribe
-    void on(ConnectionCloseEvent event) {
+    void onConnectionCloseEvent(ConnectionCloseEvent event) {
         this.stop();
     }
 

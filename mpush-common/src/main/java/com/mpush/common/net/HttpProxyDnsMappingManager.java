@@ -31,7 +31,7 @@ import com.mpush.api.srd.ServiceDiscovery;
 import com.mpush.api.srd.ServiceListener;
 import com.mpush.api.srd.ServiceNode;
 import com.mpush.tools.Jsons;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.thread.NamedPoolThreadFactory;
 import com.mpush.tools.thread.ThreadNames;
 import org.slf4j.Logger;
@@ -83,8 +83,8 @@ public class HttpProxyDnsMappingManager extends BaseService implements DnsMappin
 
     @Override
     public void init() {
-        all.putAll(CC.mp.http.dns_mapping);
-        available.putAll(CC.mp.http.dns_mapping);
+        all.putAll(IConfig.mp.http.dns_mapping);
+        available.putAll(IConfig.mp.http.dns_mapping);
     }
 
     @Override

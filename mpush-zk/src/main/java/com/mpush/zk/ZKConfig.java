@@ -19,7 +19,7 @@
 
 package com.mpush.zk;
 
-import com.mpush.tools.config.CC.mp.zk;
+import com.mpush.tools.config.IConfig.mp.zk;
 
 public class ZKConfig {
     public static final int ZK_MAX_RETRY = 3;

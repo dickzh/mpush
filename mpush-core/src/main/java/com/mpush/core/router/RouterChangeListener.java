@@ -37,7 +37,7 @@ import com.mpush.common.router.MQKickRemoteMsg;
 import com.mpush.common.router.RemoteRouter;
 import com.mpush.core.MPushServer;
 import com.mpush.tools.Jsons;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.config.ConfigTools;
 import com.mpush.tools.event.EventConsumer;
 import com.mpush.tools.log.Logs;
@@ -53,14 +53,14 @@ import static com.mpush.api.Constants.KICK_CHANNEL_PREFIX;
  * @author ohun@live.cn
  */
 public final class RouterChangeListener extends EventConsumer implements MQMessageReceiver {
-    private final boolean udpGateway = CC.mp.net.udpGateway();
+    private final boolean udpGateway = IConfig.mp.net.udpGateway();
     private String kick_channel;
     private MQClient mqClient;
     private MPushServer mPushServer;
 
     public RouterChangeListener(MPushServer mPushServer) {
         this.mPushServer = mPushServer;
-        this.kick_channel = KICK_CHANNEL_PREFIX + mPushServer.getGatewayServerNode().hostAndPort();
+        this.kick_channel = Constants.getKickChannel(mPushServer.getGatewayServerNode().hostAndPort());
         if (!udpGateway) {
             mqClient = MQClientFactory.create();
             mqClient.init(mPushServer);
@@ -74,7 +74,7 @@ public final class RouterChangeListener extends EventConsumer implements MQMessa
 
     @Subscribe
     @AllowConcurrentEvents
-    void on(RouterChangeEvent event) {
+    void onRouterChangeEvent(RouterChangeEvent event) {
         String userId = event.userId;
         Router<?> r = event.router;
         if (r.getRouteType().equals(Router.RouterType.LOCAL)) {
@@ -170,7 +170,7 @@ public final class RouterChangeListener extends EventConsumer implements MQMessa
         if (localRouter != null) {
             Logs.CONN.info("receive kick remote msg, msg={}", msg);
             if (localRouter.getRouteValue().getId().equals(msg.getConnId())) {//二次校验，防止误杀
-                //fix 0.8.1 踢人的时候不再主动删除路由信息，只发踢人消息到客户端，路由信息有客户端主动解绑的时候再处理。
+                //fix 0.8.2 踢人的时候不再主动删除路由信息，只发踢人消息到客户端，路由信息有客户端主动解绑的时候再处理。
                 //2.1删除本地路由信息
                 //localRouterManager.unRegister(userId, clientType);
                 //2.2发送踢人消息到客户端

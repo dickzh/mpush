@@ -22,7 +22,7 @@ package com.mpush.core;
 import com.mpush.api.push.PushException;
 import com.mpush.api.spi.Spi;
 import com.mpush.common.CommonExecutorFactory;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.log.Logs;
 import com.mpush.tools.thread.NamedPoolThreadFactory;
 import com.mpush.tools.thread.pool.ThreadPoolConfig;
@@ -31,8 +31,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.mpush.tools.config.CC.mp.thread.pool.ack_timer;
-import static com.mpush.tools.config.CC.mp.thread.pool.push_task;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.ack_timer;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.push_task;
 import static com.mpush.tools.thread.ThreadNames.*;
 
 /**
@@ -48,10 +48,10 @@ public final class ServerExecutorFactory extends CommonExecutorFactory {
             case MQ:
                 config = ThreadPoolConfig
                         .build(T_MQ)
-                        .setCorePoolSize(CC.mp.thread.pool.mq.min)
-                        .setMaxPoolSize(CC.mp.thread.pool.mq.max)
+                        .setCorePoolSize(IConfig.mp.thread.pool.mq.min)
+                        .setMaxPoolSize(IConfig.mp.thread.pool.mq.max)
                         .setKeepAliveSeconds(TimeUnit.SECONDS.toSeconds(10))
-                        .setQueueCapacity(CC.mp.thread.pool.mq.queue_size)
+                        .setQueueCapacity(IConfig.mp.thread.pool.mq.queue_size)
                         .setRejectedPolicy(ThreadPoolConfig.REJECTED_POLICY_CALLER_RUNS);
                 break;
             case PUSH_TASK:

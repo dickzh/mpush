@@ -35,7 +35,7 @@ public interface ServerEventListener extends Plugin {
      * <code>@Subscribe 和 @AllowConcurrentEvents</code>注解，
      * 并在构造函数调用EventBus.register(this);
      */
-    default void on(ServerStartupEvent event) {
+    default void onServerStartupEvent(ServerStartupEvent event) {
     }
 
     /**
@@ -44,7 +44,7 @@ public interface ServerEventListener extends Plugin {
      * <code>@Subscribe 和 @AllowConcurrentEvents</code>注解，
      * 并在构造函数调用EventBus.register(this);
      */
-    default void on(ServerShutdownEvent server) {
+    default void onServerShutdownEvent(ServerShutdownEvent server) {
     }
 
     /**
@@ -53,7 +53,7 @@ public interface ServerEventListener extends Plugin {
      * <code>@Subscribe 和 @AllowConcurrentEvents</code>注解，
      * 并在构造函数调用EventBus.register(this);
      */
-    default void on(RouterChangeEvent event) {
+    default void onRouterChangeEvent(RouterChangeEvent event) {
     }
 
     /**
@@ -62,7 +62,7 @@ public interface ServerEventListener extends Plugin {
      * <code>@Subscribe 和 @AllowConcurrentEvents</code>注解，
      * 并在构造函数调用EventBus.register(this);
      */
-    default void on(KickUserEvent event) {
+    default void onKickUserEvent(KickUserEvent event) {
     }
 
     /**
@@ -71,7 +71,7 @@ public interface ServerEventListener extends Plugin {
      * <code>@Subscribe 和 @AllowConcurrentEvents</code>注解，
      * 并在构造函数调用EventBus.register(this);
      */
-    default void on(UserOnlineEvent event) {
+    default void onUserOnlineEvent(UserOnlineEvent event) {
     }
 
     /**
@@ -80,6 +80,6 @@ public interface ServerEventListener extends Plugin {
      * <code>@Subscribe 和 @AllowConcurrentEvents</code>注解，
      * 并在构造函数调用EventBus.register(this);
      */
-    default void on(UserOfflineEvent event) {
+    default void onUserOfflineEvent(UserOfflineEvent event) {
     }
 }

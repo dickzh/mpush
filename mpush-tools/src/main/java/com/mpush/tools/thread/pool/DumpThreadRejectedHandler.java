@@ -21,7 +21,7 @@ package com.mpush.tools.thread.pool;
 
 import com.mpush.tools.Utils;
 import com.mpush.tools.common.JVMUtil;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public final class DumpThreadRejectedHandler implements RejectedExecutionHandler
 
     private volatile boolean dumping = false;
 
-    private static final String DUMP_DIR = CC.mp.monitor.dump_dir;
+    private static final String DUMP_DIR = IConfig.mp.monitor.dump_dir;
 
     private final ThreadPoolConfig poolConfig;
 

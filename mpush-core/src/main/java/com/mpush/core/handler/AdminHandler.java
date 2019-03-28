@@ -24,7 +24,7 @@ import com.mpush.common.router.RemoteRouter;
 import com.mpush.core.MPushServer;
 import com.mpush.tools.Jsons;
 import com.mpush.tools.common.Profiler;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.config.ConfigTools;
 import com.typesafe.config.ConfigRenderOptions;
 import io.netty.channel.*;
@@ -102,10 +102,10 @@ public final class AdminHandler extends SimpleChannelInboundHandler<String> {
 
         register("conf", (ctx, args) -> {
             if (Strings.isNullOrEmpty(args)) {
-                return CC.cfg.root().render(ConfigRenderOptions.concise().setFormatted(true));
+                return IConfig.cfg.root().render(ConfigRenderOptions.concise().setFormatted(true));
             }
-            if (CC.cfg.hasPath(args)) {
-                return CC.cfg.getAnyRef(args).toString();
+            if (IConfig.cfg.hasPath(args)) {
+                return IConfig.cfg.getAnyRef(args).toString();
             }
             return "key [" + args + "] not find in config";
         });

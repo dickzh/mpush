@@ -21,7 +21,7 @@ package com.mpush.netty.http;
 
 import com.mpush.api.service.BaseService;
 import com.mpush.api.service.Listener;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.thread.NamedThreadFactory;
 import com.mpush.tools.thread.ThreadNames;
 import io.netty.bootstrap.Bootstrap;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
-import static com.mpush.tools.config.CC.mp.thread.pool.http_work;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.http_work;
 import static com.mpush.tools.thread.ThreadNames.T_HTTP_TIMER;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
@@ -60,7 +60,7 @@ import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
  */
 public class NettyHttpClient extends BaseService implements HttpClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(NettyHttpClient.class);
-    private static final int maxContentLength = (int) CC.mp.http.max_content_length;
+    private static final int maxContentLength = (int) IConfig.mp.http.max_content_length;
     /*package*/ final AttributeKey<RequestContext> requestKey = AttributeKey.newInstance("request");
     /*package*/ final HttpConnectionPool pool = new HttpConnectionPool();
     private Bootstrap b;

@@ -44,7 +44,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.mpush.api.srd.ServiceNames.GATEWAY_SERVER;
-import static com.mpush.tools.config.CC.mp.net.gateway_client_num;
+import static com.mpush.tools.config.IConfig.mp.net.gateway_client_num;
 
 /**
  * Created by yxx on 2016/5/17.
@@ -198,7 +198,7 @@ public class GatewayTCPConnectionFactory extends GatewayConnectionFactory {
 
     @Subscribe
     @AllowConcurrentEvents
-    void on(ConnectionConnectEvent event) {
+    void onConnectionConnectEvent(ConnectionConnectEvent event) {
         Connection connection = event.connection;
         String hostAndPort = connection.getChannel().attr(attrKey).getAndSet(null);
         if (hostAndPort == null) {

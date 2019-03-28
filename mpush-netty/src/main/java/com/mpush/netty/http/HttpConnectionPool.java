@@ -19,7 +19,7 @@
 package com.mpush.netty.http;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ import java.util.List;
  * @author ohun@live.cn (夜色)
  */
 /*package*/ class HttpConnectionPool {
-    private static final int maxConnPerHost = CC.mp.http.max_conn_per_host;
+    private static final int maxConnPerHost = IConfig.mp.http.max_conn_per_host;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpConnectionPool.class);
 

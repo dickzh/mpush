@@ -87,7 +87,7 @@ public final class LocalRouterManager extends EventConsumer implements RouterMan
      */
     @Subscribe
     @AllowConcurrentEvents
-    void on(ConnectionCloseEvent event) {
+    void onConnectionCloseEvent(ConnectionCloseEvent event) {
         Connection connection = event.connection;
         if (connection == null) return;
         SessionContext context = connection.getSessionContext();

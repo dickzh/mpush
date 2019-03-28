@@ -49,14 +49,14 @@ public final class UserEventConsumer extends EventConsumer {
 
     @Subscribe
     @AllowConcurrentEvents
-    void on(UserOnlineEvent event) {
+    void onUserOnlineEvent(UserOnlineEvent event) {
         userManager.addToOnlineList(event.getUserId());
         mqClient.publish(ONLINE_CHANNEL, event.getUserId());
     }
 
     @Subscribe
     @AllowConcurrentEvents
-    void on(UserOfflineEvent event) {
+    void onUserOfflineEvent(UserOfflineEvent event) {
         userManager.remFormOnlineList(event.getUserId());
         mqClient.publish(OFFLINE_CHANNEL, event.getUserId());
     }

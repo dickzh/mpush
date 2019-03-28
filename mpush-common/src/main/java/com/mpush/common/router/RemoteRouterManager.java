@@ -101,7 +101,7 @@ public class RemoteRouterManager extends EventConsumer implements RouterManager<
      */
     @Subscribe
     @AllowConcurrentEvents
-    void on(ConnectionCloseEvent event) {
+    void onConnectionConnectEvent(ConnectionCloseEvent event) {
         Connection connection = event.connection;
         if (connection == null) return;
         SessionContext context = connection.getSessionContext();

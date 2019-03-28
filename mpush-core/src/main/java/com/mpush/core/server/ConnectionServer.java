@@ -28,9 +28,9 @@ import com.mpush.common.MessageDispatcher;
 import com.mpush.core.MPushServer;
 import com.mpush.core.handler.*;
 import com.mpush.netty.server.NettyTCPServer;
-import com.mpush.tools.config.CC;
-import com.mpush.tools.config.CC.mp.net.rcv_buf;
-import com.mpush.tools.config.CC.mp.net.snd_buf;
+import com.mpush.tools.config.IConfig;
+import com.mpush.tools.config.IConfig.mp.net.rcv_buf;
+import com.mpush.tools.config.IConfig.mp.net.snd_buf;
 import com.mpush.tools.thread.NamedPoolThreadFactory;
 import com.mpush.tools.thread.ThreadNames;
 import io.netty.bootstrap.ServerBootstrap;
@@ -43,11 +43,11 @@ import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static com.mpush.tools.config.CC.mp.net.connect_server_bind_ip;
-import static com.mpush.tools.config.CC.mp.net.connect_server_port;
-import static com.mpush.tools.config.CC.mp.net.traffic_shaping.connect_server.*;
-import static com.mpush.tools.config.CC.mp.net.write_buffer_water_mark.connect_server_high;
-import static com.mpush.tools.config.CC.mp.net.write_buffer_water_mark.connect_server_low;
+import static com.mpush.tools.config.IConfig.mp.net.connect_server_bind_ip;
+import static com.mpush.tools.config.IConfig.mp.net.connect_server_port;
+import static com.mpush.tools.config.IConfig.mp.net.traffic_shaping.connect_server.*;
+import static com.mpush.tools.config.IConfig.mp.net.write_buffer_water_mark.connect_server_high;
+import static com.mpush.tools.config.IConfig.mp.net.write_buffer_water_mark.connect_server_low;
 import static com.mpush.tools.thread.ThreadNames.T_TRAFFIC_SHAPING;
 
 /**
@@ -83,9 +83,9 @@ public final class ConnectionServer extends NettyTCPServer {
         messageDispatcher.register(Command.FAST_CONNECT, () -> new FastConnectHandler(mPushServer));
         messageDispatcher.register(Command.PUSH, PushHandlerFactory::create);
         messageDispatcher.register(Command.ACK, () -> new AckHandler(mPushServer));
-        messageDispatcher.register(Command.HTTP_PROXY, () -> new HttpProxyHandler(mPushServer), CC.mp.http.proxy_enabled);
+        messageDispatcher.register(Command.HTTP_PROXY, () -> new HttpProxyHandler(mPushServer), IConfig.mp.http.proxy_enabled);
 
-        if (CC.mp.net.traffic_shaping.connect_server.enabled) {//启用流量整形，限流
+        if (IConfig.mp.net.traffic_shaping.connect_server.enabled) {//启用流量整形，限流
             trafficShapingExecutor = Executors.newSingleThreadScheduledExecutor(new NamedPoolThreadFactory(T_TRAFFIC_SHAPING));
             trafficShapingHandler = new GlobalChannelTrafficShapingHandler(
                     trafficShapingExecutor,
@@ -115,7 +115,7 @@ public final class ConnectionServer extends NettyTCPServer {
 
     @Override
     protected int getWorkThreadNum() {
-        return CC.mp.thread.pool.conn_work;
+        return IConfig.mp.thread.pool.conn_work;
     }
 
     @Override

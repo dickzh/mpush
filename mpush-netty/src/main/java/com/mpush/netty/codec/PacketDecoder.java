@@ -23,14 +23,13 @@ import com.mpush.api.protocol.Packet;
 import com.mpush.api.protocol.JsonPacket;
 import com.mpush.api.protocol.UDPPacket;
 import com.mpush.tools.Jsons;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.TooLongFrameException;
 
-import java.util.HashMap;
 import java.util.List;
 
 import static com.mpush.api.protocol.Packet.decodePacket;
@@ -42,7 +41,7 @@ import static com.mpush.api.protocol.Packet.decodePacket;
  * @author ohun@live.cn
  */
 public final class PacketDecoder extends ByteToMessageDecoder {
-    private static final int maxPacketSize = CC.mp.core.max_packet_size;
+    private static final int maxPacketSize = IConfig.mp.core.max_packet_size;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {

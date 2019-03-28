@@ -19,13 +19,15 @@
 
 package com.mpush.api.event;
 
+import com.mpush.api.Constants;
+
 /**
  * Created by ohun on 16/9/19.
  *
  * @author ohun@live.cn (夜色)
  */
 public interface Topics {
-    String ONLINE_CHANNEL = "/mpush/online/";
+    String ONLINE_CHANNEL = Constants.ONLINE_CHANNEL;
 
-    String OFFLINE_CHANNEL = "/mpush/offline/";
+    String OFFLINE_CHANNEL = Constants.OFFLINE_CHANNEL;
 }

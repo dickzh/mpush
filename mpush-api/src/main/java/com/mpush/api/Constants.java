@@ -27,15 +27,17 @@ import java.nio.charset.StandardCharsets;
  *
  * @author ohun@live.cn
  */
-public interface Constants {
-    Charset UTF_8 = StandardCharsets.UTF_8;
-    byte[] EMPTY_BYTES = new byte[0];
-    String HTTP_HEAD_READ_TIMEOUT = "readTimeout";
-    String EMPTY_STRING = "";
-    String ANY_HOST = "0.0.0.0";
-    String KICK_CHANNEL_PREFIX = "/mpush/kick/";
+public class Constants {
+    public final static Charset UTF_8 = StandardCharsets.UTF_8;
+    public final static byte[] EMPTY_BYTES = new byte[0];
+    public final static String HTTP_HEAD_READ_TIMEOUT = "readTimeout";
+    public final static String EMPTY_STRING = "";
+    public final static String ANY_HOST = "0.0.0.0";
+    public final static String KICK_CHANNEL_PREFIX = "/mpush/kick/";
+    public final static String ONLINE_CHANNEL = "/mpush/online/";
+    public final static String OFFLINE_CHANNEL = "/mpush/offline/";
 
-    static String getKickChannel(String hostAndPort) {
+    public static String getKickChannel(String hostAndPort) {
         return KICK_CHANNEL_PREFIX + hostAndPort;
     }
 

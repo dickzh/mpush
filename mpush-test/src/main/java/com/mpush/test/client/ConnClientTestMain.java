@@ -64,7 +64,7 @@ public class ConnClientTestMain {
 
     @Test
     public void testConnClient() throws Exception {
-        testConnClient(1, "", 1, true);
+        testConnClient(10000, "", 1, true);
         LockSupport.park();
     }
 

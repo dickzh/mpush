@@ -5,7 +5,7 @@
     <parent>
         <artifactId>mpush</artifactId>
         <groupId>com.github.mpusher</groupId>
-        <version>0.8.1</version>
+        <version>0.8.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
     <name>mpush-common</name>
     <description>MPUSH消息推送系统基础模块</description>
-    <url>https://github.com/mpusher/mpush</url>
+    <url>https://github.com/dickzh/mpush</url>
 
     <dependencies>
         <dependency>

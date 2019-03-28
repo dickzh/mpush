@@ -20,7 +20,7 @@
 package com.mpush.tools.config;
 
 import com.mpush.tools.Utils;
-import com.mpush.tools.config.CC.mp.net.public_ip_mapping;
+import com.mpush.tools.config.IConfig.mp.net.public_ip_mapping;
 
 /**
  * Created by yxx on 2016/5/18.
@@ -34,8 +34,8 @@ public final class ConfigTools {
 
     public static int getHeartbeat(int min, int max) {
         return Math.max(
-                CC.mp.core.min_heartbeat,
-                Math.min(max, CC.mp.core.max_heartbeat)
+                IConfig.mp.core.min_heartbeat,
+                Math.min(max, IConfig.mp.core.max_heartbeat)
         );
     }
 
@@ -45,8 +45,8 @@ public final class ConfigTools {
      * @return 内网IP地址
      */
     public static String getLocalIp() {
-        if (CC.mp.net.local_ip.length() > 0) {
-            return CC.mp.net.local_ip;
+        if (IConfig.mp.net.local_ip.length() > 0) {
+            return IConfig.mp.net.local_ip;
         }
         return Utils.lookupLocalIp();
     }
@@ -58,8 +58,8 @@ public final class ConfigTools {
      */
     public static String getPublicIp() {
 
-        if (CC.mp.net.public_ip.length() > 0) {
-            return CC.mp.net.public_ip;
+        if (IConfig.mp.net.public_ip.length() > 0) {
+            return IConfig.mp.net.public_ip;
         }
 
         String localIp = getLocalIp();
@@ -75,15 +75,15 @@ public final class ConfigTools {
 
 
     public static String getConnectServerRegisterIp() {
-        if (CC.mp.net.connect_server_register_ip.length() > 0) {
-            return CC.mp.net.connect_server_register_ip;
+        if (IConfig.mp.net.connect_server_register_ip.length() > 0) {
+            return IConfig.mp.net.connect_server_register_ip;
         }
         return getPublicIp();
     }
 
     public static String getGatewayServerRegisterIp() {
-        if (CC.mp.net.gateway_server_register_ip.length() > 0) {
-            return CC.mp.net.gateway_server_register_ip;
+        if (IConfig.mp.net.gateway_server_register_ip.length() > 0) {
+            return IConfig.mp.net.gateway_server_register_ip;
         }
         return getLocalIp();
     }

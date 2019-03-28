@@ -24,9 +24,8 @@ import com.mpush.api.spi.common.*;
 import com.mpush.cache.redis.connection.RedisConnectionFactory;
 import com.mpush.tools.Jsons;
 import com.mpush.tools.Utils;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.log.Logs;
-import com.mpush.monitor.service.ThreadPoolManager;
 import redis.clients.jedis.*;
 
 import java.util.*;
@@ -44,12 +43,12 @@ public final class RedisManager implements CacheManager {
 
     public void init() {
         Logs.CACHE.info("begin init redis...");
-        factory.setPassword(CC.mp.redis.password);
-        factory.setPoolConfig(CC.mp.redis.getPoolConfig(JedisPoolConfig.class));
-        factory.setRedisServers(CC.mp.redis.nodes);
-        factory.setCluster(CC.mp.redis.isCluster());
-        if (CC.mp.redis.isSentinel()) {
-            factory.setSentinelMaster(CC.mp.redis.sentinelMaster);
+        factory.setPassword(IConfig.mp.redis.password);
+        factory.setPoolConfig(IConfig.mp.redis.getPoolConfig(JedisPoolConfig.class));
+        factory.setRedisServers(IConfig.mp.redis.nodes);
+        factory.setCluster(IConfig.mp.redis.isCluster());
+        if (IConfig.mp.redis.isSentinel()) {
+            factory.setSentinelMaster(IConfig.mp.redis.sentinelMaster);
         }
         factory.init();
         test();

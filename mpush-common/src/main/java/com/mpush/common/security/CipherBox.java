@@ -19,7 +19,7 @@
 
 package com.mpush.common.security;
 
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.crypto.RSAUtils;
 
 import java.security.SecureRandom;
@@ -32,7 +32,7 @@ import java.security.interfaces.RSAPublicKey;
  * @author ohun@live.cn
  */
 public final class CipherBox {
-    public final int aesKeyLength = CC.mp.security.aes_key_length;
+    public final int aesKeyLength = IConfig.mp.security.aes_key_length;
     public static final CipherBox I = new CipherBox();
     private SecureRandom random = new SecureRandom();
     private RSAPrivateKey privateKey;
@@ -40,7 +40,7 @@ public final class CipherBox {
 
     public RSAPrivateKey getPrivateKey() {
         if (privateKey == null) {
-            String key = CC.mp.security.private_key;
+            String key = IConfig.mp.security.private_key;
             try {
                 privateKey = (RSAPrivateKey) RSAUtils.decodePrivateKey(key);
             } catch (Exception e) {
@@ -52,7 +52,7 @@ public final class CipherBox {
 
     public RSAPublicKey getPublicKey() {
         if (publicKey == null) {
-            String key = CC.mp.security.public_key;
+            String key = IConfig.mp.security.public_key;
             try {
                 publicKey = (RSAPublicKey) RSAUtils.decodePublicKey(key);
             } catch (Exception e) {

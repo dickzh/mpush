@@ -21,7 +21,7 @@ package com.mpush.netty.http;
 
 import com.google.common.primitives.Ints;
 import com.mpush.api.Constants;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.util.Timeout;
@@ -30,7 +30,7 @@ import io.netty.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RequestContext implements TimerTask, HttpCallback {
-    private static final int TIMEOUT = CC.mp.http.default_read_timeout;
+    private static final int TIMEOUT = IConfig.mp.http.default_read_timeout;
     private final long startTime = System.currentTimeMillis();
     final AtomicBoolean cancelled = new AtomicBoolean(false);
     final int readTimeout;

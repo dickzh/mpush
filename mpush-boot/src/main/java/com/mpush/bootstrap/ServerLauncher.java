@@ -24,9 +24,9 @@ import com.mpush.api.common.ServerEventListener;
 import com.mpush.api.spi.core.ServerEventListenerFactory;
 import com.mpush.bootstrap.job.*;
 import com.mpush.core.MPushServer;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 
-import static com.mpush.tools.config.CC.mp.net.*;
+import static com.mpush.tools.config.IConfig.mp.net.*;
 
 /**
  * Created by yxx on 2016/5/14.
@@ -65,7 +65,7 @@ public final class ServerLauncher {
                 .setNext(new ServerBoot(mPushServer.getAdminServer(), null))//7.启动控制台服务
                 .setNext(new RouterCenterBoot(mPushServer))//8.启动路由中心组件
                 .setNext(new PushCenterBoot(mPushServer))//9.启动推送中心组件
-                .setNext(() -> new HttpProxyBoot(mPushServer), CC.mp.http.proxy_enabled)//10.启动http代理服务，dns解析服务
+                .setNext(() -> new HttpProxyBoot(mPushServer), IConfig.mp.http.proxy_enabled)//10.启动http代理服务，dns解析服务
                 .setNext(new MonitorBoot(mPushServer))//11.启动监控服务
                 .end();
     }

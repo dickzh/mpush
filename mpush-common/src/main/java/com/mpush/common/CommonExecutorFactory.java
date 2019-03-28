@@ -20,7 +20,7 @@
 package com.mpush.common;
 
 import com.mpush.api.spi.common.ExecutorFactory;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.log.Logs;
 import com.mpush.tools.thread.NamedPoolThreadFactory;
 import com.mpush.tools.thread.pool.DefaultExecutor;
@@ -32,8 +32,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.mpush.tools.config.CC.mp.thread.pool.ack_timer;
-import static com.mpush.tools.config.CC.mp.thread.pool.push_client;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.ack_timer;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.push_client;
 import static com.mpush.tools.thread.ThreadNames.T_ARK_REQ_TIMER;
 import static com.mpush.tools.thread.ThreadNames.T_EVENT_BUS;
 import static com.mpush.tools.thread.ThreadNames.T_PUSH_CLIENT_TIMER;
@@ -67,10 +67,10 @@ public class CommonExecutorFactory implements ExecutorFactory {
             case EVENT_BUS:
                 config = ThreadPoolConfig
                         .build(T_EVENT_BUS)
-                        .setCorePoolSize(CC.mp.thread.pool.event_bus.min)
-                        .setMaxPoolSize(CC.mp.thread.pool.event_bus.max)
+                        .setCorePoolSize(IConfig.mp.thread.pool.event_bus.min)
+                        .setMaxPoolSize(IConfig.mp.thread.pool.event_bus.max)
                         .setKeepAliveSeconds(TimeUnit.SECONDS.toSeconds(10))
-                        .setQueueCapacity(CC.mp.thread.pool.event_bus.queue_size)
+                        .setQueueCapacity(IConfig.mp.thread.pool.event_bus.queue_size)
                         .setRejectedPolicy(ThreadPoolConfig.REJECTED_POLICY_CALLER_RUNS);
                 break;
             case PUSH_CLIENT: {

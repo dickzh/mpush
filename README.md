@@ -6,13 +6,13 @@
 
 ## 源码
 * group [https://github.com/mpusher/](https://github.com/mpusher/) 源代码空间
-* server [https://github.com/mpusher/mpush](https://github.com/mpusher/mpush) 服务端源码
+* server [https://github.com/dickzh/mpush](https://github.com/dickzh/mpush) 服务端源码
 * alloc [https://github.com/mpusher/alloc](https://github.com/mpusher/alloc)  调度器源码
 * mpns [https://github.com/mpusher/mpns](https://github.com/mpusher/mpns)     个性化推送中心源码
-* java-client [https://github.com/mpusher/mpush-client-java](https://github.com/mpusher/mpush-client-java) 纯java客户端源码
-* android sdk&demo [https://github.com/mpusher/mpush-android](https://github.com/mpusher/mpush-android)    安卓SDK和DEMO源码
-* IOS sdk(swift) [https://github.com/mpusher/mpush-client-swift](https://github.com/mpusher/mpush-client-swift) swift版客户端源码
-* IOS sdk(OC) [https://github.com/mpusher/mpush-client-oc](https://github.com/mpusher/mpush-client-oc)  Object C 客户端源码
+* java-client [https://github.com/dickzh/mpush-client-java](https://github.com/dickzh/mpush-client-java) 纯java客户端源码
+* android sdk&demo [https://github.com/dickzh/mpush-android](https://github.com/dickzh/mpush-android)    安卓SDK和DEMO源码
+* IOS sdk(swift) [https://github.com/dickzh/mpush-client-swift](https://github.com/dickzh/mpush-client-swift) swift版客户端源码
+* IOS sdk(OC) [https://github.com/dickzh/mpush-client-oc](https://github.com/dickzh/mpush-client-oc)  Object C 客户端源码
 
 ps:由于源码分别在github和码云有两份，最新的代码以github为主
 
@@ -20,7 +20,7 @@ ps:由于源码分别在github和码云有两份，最新的代码以github为�
 ![](https://mpusher.github.io/docs/服务依赖关系.png)
 
 ## 源码测试
-1. ```git clone https://github.com/mpusher/mpush.git```
+1. ```git clone https://github.com/dickzh/mpush.git```
 2. 导入到eclipse或Intellij IDEA
 3. 打开```mpush-test```模块，所有的测试代码都在该模块下
 4. 修改配置文件```src/test/resource/application.conf```文件修改方式参照 服务部署第6点
@@ -39,7 +39,7 @@ ps:由于源码分别在github和码云有两份，最新的代码以github为�
 
 3. 安装```Redis``` (安装配置步骤略)
 
-4. 下载mpush server 最新的正式包[https://github.com/mpusher/mpush/releases](https://github.com/mpusher/mpush/releases)
+4. 下载mpush server 最新的正式包[https://github.com/dickzh/mpush/releases](https://github.com/dickzh/mpush/releases)
 
 5. 解压下载的tar包`tar -zvxf mpush-release-0.0.2.tar.gz`到 mpush 目录, 结构如下
 

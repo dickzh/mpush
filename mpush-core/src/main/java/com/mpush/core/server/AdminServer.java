@@ -22,7 +22,7 @@ package com.mpush.core.server;
 import com.mpush.core.MPushServer;
 import com.mpush.core.handler.AdminHandler;
 import com.mpush.netty.server.NettyTCPServer;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.thread.ThreadNames;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
@@ -38,7 +38,7 @@ public final class AdminServer extends NettyTCPServer {
     private MPushServer mPushServer;
 
     public AdminServer(MPushServer mPushServer) {
-        super(CC.mp.net.admin_server_port);
+        super(IConfig.mp.net.admin_server_port);
         this.mPushServer = mPushServer;
     }
 

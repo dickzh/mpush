@@ -26,7 +26,7 @@ import com.mpush.api.protocol.Packet;
 import com.mpush.tools.Jsons;
 import com.mpush.tools.common.IOUtils;
 import com.mpush.tools.common.Profiler;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import io.netty.channel.ChannelFutureListener;
 
 import java.net.InetSocketAddress;
@@ -112,7 +112,7 @@ public abstract class BaseMessage implements Message {
         Profiler.release();
         if (tmp != null && tmp.length > 0) {
             //1.压缩
-            if (tmp.length > CC.mp.core.compress_threshold) {
+            if (tmp.length > IConfig.mp.core.compress_threshold) {
                 byte[] result = IOUtils.compress(tmp);
                 if (result.length > 0) {
                     tmp = result;

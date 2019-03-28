@@ -19,7 +19,7 @@
 
 package com.mpush.test.configcenter;
 
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
 import org.junit.Before;
@@ -36,13 +36,13 @@ public class ConfigCenterTest {
     @Test
     public void testKey() {
         //String t = ConfigKey.app_env.getString();
-        System.out.println(CC.mp.push.flow_control.global.max);
+        System.out.println(IConfig.mp.push.flow_control.global.max);
     }
 
     @Test
     public void testLoad() {
         Map<String, String> map = new HashMap<>();
-        CC.cfg.entrySet().forEach(e -> print(e.getKey(), e.getValue(), map));
+        IConfig.cfg.entrySet().forEach(e -> print(e.getKey(), e.getValue(), map));
         List<String> list = new ArrayList<>(map.values());
         Collections.sort(list);
         list.forEach(s -> System.out.println(s.substring(s.indexOf(".") + 1) + ","));
@@ -67,7 +67,7 @@ public class ConfigCenterTest {
         Map<String, String> map = new HashMap<>();
         System.out.println("public interface mp {");
         System.out.printf("  Config cfg = ConfigManager.I.mp().toConfig();%n%n");
-        CC.mp.cfg.root().forEach((s, configValue) -> print2(s, configValue, "mp", 1));
+        IConfig.mp.cfg.root().forEach((s, configValue) -> print2(s, configValue, "mp", 1));
         System.out.println("}");
     }
 

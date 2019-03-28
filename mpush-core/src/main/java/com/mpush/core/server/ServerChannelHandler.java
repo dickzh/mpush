@@ -28,7 +28,7 @@ import com.mpush.api.protocol.Command;
 import com.mpush.api.protocol.Packet;
 import com.mpush.netty.connection.NettyConnection;
 import com.mpush.tools.common.Profiler;
-import com.mpush.tools.config.CC;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.event.EventBus;
 import com.mpush.tools.log.Logs;
 import io.netty.channel.ChannelHandler;
@@ -47,7 +47,7 @@ public final class ServerChannelHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerChannelHandler.class);
 
-    private static final long profile_slowly_limit = CC.mp.monitor.profile_slowly_duration.toMillis();
+    private static final long profile_slowly_limit = IConfig.mp.monitor.profile_slowly_duration.toMillis();
 
     private final boolean security; //是否启用加密
     private final ConnectionManager connectionManager;

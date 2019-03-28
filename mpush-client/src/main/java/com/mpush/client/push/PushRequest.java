@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author ohun@live.cn
  */
 public final class PushRequest extends FutureTask<PushResult> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PushRequest.class);
+    private static final Logger logger = LoggerFactory.getLogger(PushRequest.class);
 
     private static final Callable<PushResult> NONE = () -> new PushResult(PushResult.CODE_FAILURE);
 
@@ -99,9 +99,9 @@ public final class PushRequest extends FutureTask<PushResult> {
                     pushMessage.sendRaw(f -> {
                         timeLine.addTimePoint("send-to-gateway-end");
                         if (f.isSuccess()) {
-                            LOGGER.debug("send to gateway server success, location={}, conn={}", location, f.channel());
+                            logger.debug("send to gateway server success, location={}, conn={}", location, f.channel());
                         } else {
-                            LOGGER.error("send to gateway server failure, location={}, conn={}", location, f.channel(), f.cause());
+                            logger.error("send to gateway server failure, location={}, conn={}", location, f.channel(), f.cause());
                             failure();
                         }
                     });
@@ -112,7 +112,7 @@ public final class PushRequest extends FutureTask<PushResult> {
         );
 
         if (!success) {
-            LOGGER.error("get gateway connection failure, location={}", location);
+            logger.error("get gateway connection failure, location={}", location);
             failure();
         }
     }
@@ -136,7 +136,7 @@ public final class PushRequest extends FutureTask<PushResult> {
                 }
             }
         }
-        LOGGER.info("push request {} end, {}, {}, {}", status, userId, location, timeLine);
+        logger.info("push request {} end, {}, {}, {}", status, userId, location, timeLine);
     }
 
     /**
@@ -182,10 +182,10 @@ public final class PushRequest extends FutureTask<PushResult> {
                         pushMessage -> {
                             pushMessage.sendRaw(f -> {
                                 if (f.isSuccess()) {
-                                    LOGGER.debug("send broadcast to gateway server success, userId={}, conn={}", userId, f.channel());
+                                    logger.debug("send broadcast to gateway server success, userId={}, conn={}", userId, f.channel());
                                 } else {
                                     failure();
-                                    LOGGER.error("send broadcast to gateway server failure, userId={}, conn={}", userId, f.channel(), f.cause());
+                                    logger.error("send broadcast to gateway server failure, userId={}, conn={}", userId, f.channel(), f.cause());
                                 }
                             });
 
@@ -199,7 +199,7 @@ public final class PushRequest extends FutureTask<PushResult> {
                 );
 
         if (!success) {
-            LOGGER.error("get gateway connection failure when broadcast.");
+            logger.error("get gateway connection failure when broadcast.");
             failure();
         }
 
@@ -232,7 +232,7 @@ public final class PushRequest extends FutureTask<PushResult> {
 
     public void onRedirect() {
         timeLine.addTimePoint("redirect");
-        LOGGER.warn("user route has changed, userId={}, location={}", userId, location);
+        logger.warn("user route has changed, userId={}, location={}", userId, location);
         //1. 清理一下缓存，确保查询的路由是正确的
         mPushClient.getCachedRemoteRouterManager().invalidateLocalCache(userId);
         if (status.get() == Status.init) {//init表示任务还没有完成，还可以重新发送

@@ -21,18 +21,16 @@ package com.mpush.test.client;
 
 import com.mpush.api.service.BaseService;
 import com.mpush.api.service.Listener;
-import com.mpush.api.spi.common.CacheManager;
 import com.mpush.api.spi.common.CacheManagerFactory;
 import com.mpush.api.spi.common.ServiceDiscoveryFactory;
 import com.mpush.api.srd.ServiceNames;
 import com.mpush.api.srd.ServiceNode;
-import com.mpush.cache.redis.manager.RedisManager;
 import com.mpush.client.connect.ClientConfig;
 import com.mpush.client.connect.ConnClientChannelHandler;
 import com.mpush.monitor.service.MonitorService;
 import com.mpush.netty.codec.PacketDecoder;
 import com.mpush.netty.codec.PacketEncoder;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -46,12 +44,11 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import static com.mpush.client.connect.ConnClientChannelHandler.CONFIG_KEY;
 
 public final class ConnClientBoot extends BaseService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConnClientBoot.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnClientBoot.class);
 
     private Bootstrap bootstrap;
     private NioEventLoopGroup workerGroup;
@@ -63,7 +60,7 @@ public final class ConnClientBoot extends BaseService {
         ServiceDiscoveryFactory.create().syncStart();
         CacheManagerFactory.create().init();
         monitorService = new MonitorService();
-        EventBus.create(monitorService.getThreadPoolManager().getEventBusExecutor());
+        EventBusDelegate.create(monitorService.getThreadPoolManager().getEventBusExecutor());
 
         this.workerGroup = new NioEventLoopGroup();
         this.bootstrap = new Bootstrap();
@@ -105,9 +102,9 @@ public final class ConnClientBoot extends BaseService {
         future.addListener(f -> {
             if (f.isSuccess()) {
                 future.channel().attr(CONFIG_KEY).set(clientConfig);
-                LOGGER.info("start netty client success, remote={}, local={}", remote, local);
+                logger.info("start netty client success, remote={}, local={}", remote, local);
             } else {
-                LOGGER.error("start netty client failure, remote={}, local={}", remote, local, f.cause());
+                logger.error("start netty client failure, remote={}, local={}", remote, local, f.cause());
             }
         });
         return future;

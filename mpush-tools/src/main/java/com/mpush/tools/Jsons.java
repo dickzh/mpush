@@ -36,13 +36,13 @@ import java.util.Map;
  * @author ohun@live.cn (夜色)
  */
 public final class Jsons {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Jsons.class);
+    private static final Logger logger = LoggerFactory.getLogger(Jsons.class);
 
     public static String toJson(Object bean) {
         try {
             return JSON.toJSONString(bean);
         } catch (Exception e) {
-            LOGGER.error("Jsons.toJson ex, bean=" + bean, e);
+            logger.error("Jsons.toJson ex, bean=" + bean, e);
         }
         return null;
     }
@@ -52,7 +52,7 @@ public final class Jsons {
         try {
             return JSON.parseObject(json, clazz);
         } catch (Exception e) {
-            LOGGER.error("Jsons.fromJson ex, json=" + json + ", clazz=" + clazz, e);
+            logger.error("Jsons.fromJson ex, json=" + json + ", clazz=" + clazz, e);
         }
         return null;
     }
@@ -65,7 +65,7 @@ public final class Jsons {
         try {
             return JSON.parseArray(json, type);
         } catch (Exception e) {
-            LOGGER.error("Jsons.fromJsonToList ex, json=" + json + ", type=" + type, e);
+            logger.error("Jsons.fromJsonToList ex, json=" + json + ", type=" + type, e);
         }
         return null;
     }
@@ -74,7 +74,7 @@ public final class Jsons {
         try {
             return JSON.parseObject(json, type);
         } catch (Exception e) {
-            LOGGER.error("Jsons.fromJson ex, json=" + json + ", type=" + type, e);
+            logger.error("Jsons.fromJson ex, json=" + json + ", type=" + type, e);
         }
         return null;
     }

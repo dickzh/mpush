@@ -40,7 +40,7 @@ import java.util.Set;
 public class JVMUtil {
     private static final String HOT_SPOT_BEAN_NAME = "com.sun.management:type=HotSpotDiagnostic";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JVMUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(JVMUtil.class);
 
     private static HotSpotDiagnosticMXBean hotSpotMXBean;
     private static ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
@@ -118,7 +118,7 @@ public class JVMUtil {
                 try (FileOutputStream out = new FileOutputStream(file)) {
                     JVMUtil.jstack(out);
                 } catch (Throwable t) {
-                    LOGGER.error("Dump JVM cache Error!", t);
+                    logger.error("Dump JVM cache Error!", t);
                 }
             }
         })).start();
@@ -142,7 +142,7 @@ public class JVMUtil {
                 }
             });
         } catch (Exception e) {
-            LOGGER.error("getHotSpotMXBean Error!", e);
+            logger.error("getHotSpotMXBean Error!", e);
             return null;
         }
     }
@@ -167,7 +167,7 @@ public class JVMUtil {
             }
             hotSpotMXBean.dumpHeap(currentFileName, live);
         } catch (Exception e) {
-            LOGGER.error("dumpHeap Error!" + currentFileName, e);
+            logger.error("dumpHeap Error!" + currentFileName, e);
         }
     }
 

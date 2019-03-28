@@ -28,7 +28,7 @@ import com.mpush.client.push.PushRequestBus;
 import com.mpush.common.router.CachedRemoteRouterManager;
 import com.mpush.monitor.service.MonitorService;
 import com.mpush.monitor.service.ThreadPoolManager;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 
 /**
  * Created by ohun on 2017/7/15.
@@ -48,7 +48,7 @@ public final class MPushClient implements MPushContext {
     public MPushClient() {
         monitorService = new MonitorService();
 
-        EventBus.create(monitorService.getThreadPoolManager().getEventBusExecutor());
+        EventBusDelegate.create(monitorService.getThreadPoolManager().getEventBusExecutor());
 
         pushRequestBus = new PushRequestBus(this);
 

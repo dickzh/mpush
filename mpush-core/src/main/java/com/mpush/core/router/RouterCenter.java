@@ -28,7 +28,7 @@ import com.mpush.api.service.Listener;
 import com.mpush.common.router.RemoteRouter;
 import com.mpush.common.router.RemoteRouterManager;
 import com.mpush.core.MPushServer;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author ohun@live.cn
  */
 public final class RouterCenter extends BaseService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RouterCenter.class);
+    private static final Logger logger = LoggerFactory.getLogger(RouterCenter.class);
 
     private LocalRouterManager localRouterManager;
     private RemoteRouterManager remoteRouterManager;
@@ -88,17 +88,17 @@ public final class RouterCenter extends BaseService {
             oldLocalRouter = localRouterManager.register(userId, localRouter);
             oldRemoteRouter = remoteRouterManager.register(userId, remoteRouter);
         } catch (Exception e) {
-            LOGGER.error("register router ex, userId={}, connection={}", userId, connection, e);
+            logger.error("register router ex, userId={}, connection={}", userId, connection, e);
         }
 
         if (oldLocalRouter != null) {
-            EventBus.post(new RouterChangeEvent(userId, oldLocalRouter));
-            LOGGER.info("register router success, find old local router={}, userId={}", oldLocalRouter, userId);
+            EventBusDelegate.post(new RouterChangeEvent(userId, oldLocalRouter));
+            logger.info("register router success, find old local router={}, userId={}", oldLocalRouter, userId);
         }
 
         if (oldRemoteRouter != null && oldRemoteRouter.isOnline()) {
-            EventBus.post(new RouterChangeEvent(userId, oldRemoteRouter));
-            LOGGER.info("register router success, find old remote router={}, userId={}", oldRemoteRouter, userId);
+            EventBusDelegate.post(new RouterChangeEvent(userId, oldRemoteRouter));
+            logger.info("register router success, find old remote router={}, userId={}", oldRemoteRouter, userId);
         }
         return true;
     }

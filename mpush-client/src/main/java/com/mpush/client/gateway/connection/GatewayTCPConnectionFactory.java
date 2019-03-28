@@ -32,7 +32,7 @@ import com.mpush.api.srd.ServiceNode;
 import com.mpush.client.MPushClient;
 import com.mpush.client.gateway.GatewayClient;
 import com.mpush.common.message.BaseMessage;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import io.netty.channel.ChannelFuture;
 import io.netty.util.AttributeKey;
 
@@ -66,7 +66,7 @@ public class GatewayTCPConnectionFactory extends GatewayConnectionFactory {
 
     @Override
     protected void doStart(Listener listener) throws Throwable {
-        EventBus.register(this);
+        EventBusDelegate.register(this);
 
         gatewayClient = new GatewayClient(mPushClient);
         gatewayClient.start().join();

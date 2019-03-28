@@ -14,7 +14,7 @@ import java.net.URLDecoder;
 
 @ChannelHandler.Sharable
 /*package*/ class HttpClientHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NettyHttpClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(NettyHttpClient.class);
 
     private final NettyHttpClient client;
 
@@ -32,7 +32,7 @@ import java.net.URLDecoder;
         } finally {
             client.pool.tryRelease(ctx.channel());
         }
-        LOGGER.error("http client caught an ex, info={}", context, cause);
+        logger.error("http client caught an ex, info={}", context, cause);
     }
 
     @Override
@@ -40,7 +40,7 @@ import java.net.URLDecoder;
         RequestContext context = ctx.channel().attr(client.requestKey).getAndSet(null);
         try {
             if (context != null && context.tryDone()) {
-                LOGGER.debug("receive server response, request={}, response={}", context, msg);
+                logger.debug("receive server response, request={}, response={}", context, msg);
                 HttpResponse response = (HttpResponse) msg;
                 if (isRedirect(response)) {
                     if (context.onRedirect(response)) {
@@ -55,7 +55,7 @@ import java.net.URLDecoder;
                 }
                 context.onResponse(response);
             } else {
-                LOGGER.warn("receive server response but timeout, request={}, response={}", context, msg);
+                logger.warn("receive server response but timeout, request={}, response={}", context, msg);
             }
         } finally {
             client.pool.tryRelease(ctx.channel());

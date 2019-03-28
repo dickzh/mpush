@@ -33,7 +33,7 @@ import com.mpush.common.message.*;
 import com.mpush.common.security.AesCipher;
 import com.mpush.common.security.CipherBox;
 import com.mpush.netty.connection.NettyConnection;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import com.mpush.tools.thread.NamedPoolThreadFactory;
 import com.mpush.tools.thread.ThreadNames;
 import io.netty.channel.ChannelHandlerContext;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * @author ohun@live.cn
  */
 public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConnClientChannelHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnClientChannelHandler.class);
     private static final Timer HASHED_WHEEL_TIMER = new HashedWheelTimer(new NamedPoolThreadFactory(ThreadNames.T_CONN_TIMER));
     public static final AttributeKey<ClientConfig> CONFIG_KEY = AttributeKey.newInstance("clientConfig");
     public static final TestStatistics STATISTICS = new TestStatistics();
@@ -91,7 +91,7 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
                 connection.getSessionContext().changeCipher(new AesCipher(sessionKey, clientConfig.getIv()));
                 connection.getSessionContext().setHeartbeat(message.heartbeat);
                 startHeartBeat(message.heartbeat - 1000);
-                LOGGER.info("handshake success, clientConfig={}, connectedNum={}", clientConfig, connectedNum);
+                logger.info("handshake success, clientConfig={}, connectedNum={}", clientConfig, connectedNum);
                 bindUser(clientConfig);
                 if (!perfTest) {
                     saveToRedisForFastConnection(clientConfig, message.sessionId, message.expireTime, sessionKey);
@@ -109,30 +109,30 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
                 connection.getSessionContext().setHeartbeat(message.heartbeat);
                 startHeartBeat(message.heartbeat - 1000);
                 bindUser(clientConfig);
-                LOGGER.info("fast connect success, clientConfig={}, connectedNum={}", clientConfig, connectedNum);
+                logger.info("fast connect success, clientConfig={}, connectedNum={}", clientConfig, connectedNum);
             } else if (command == Command.KICK) {
                 KickUserMessage message = new KickUserMessage(packet, connection);
-                LOGGER.error("receive kick user msg userId={}, deviceId={}, message={},", clientConfig.getUserId(), clientConfig.getDeviceId(), message);
+                logger.error("receive kick user msg userId={}, deviceId={}, message={},", clientConfig.getUserId(), clientConfig.getDeviceId(), message);
                 ctx.close();
             } else if (command == Command.ERROR) {
                 ErrorMessage message = new ErrorMessage(packet, connection);
                 message.decodeBody();
-                LOGGER.error("receive an error packet=" + message);
+                logger.error("receive an error packet=" + message);
             } else if (command == Command.PUSH) {
                 int receivePushNum = STATISTICS.receivePushNum.incrementAndGet();
 
                 PushMessage message = new PushMessage(packet, connection);
                 message.decodeBody();
-                LOGGER.info("receive push message, content={}, receivePushNum={}"
+                logger.info("receive push message, content={}, receivePushNum={}"
                         , new String(message.content, Constants.UTF_8), receivePushNum);
 
                 if (message.needAck()) {
                     AckMessage.from(message).sendRaw();
-                    LOGGER.info("send ack success for sessionId={}", message.getSessionId());
+                    logger.info("send ack success for sessionId={}", message.getSessionId());
                 }
 
             } else if (command == Command.HEARTBEAT) {
-                LOGGER.info("receive heartbeat pong...");
+                logger.info("receive heartbeat pong...");
             } else if (command == Command.OK) {
                 OkMessage message = new OkMessage(packet, connection);
                 message.decodeBody();
@@ -141,29 +141,29 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
                     bindUserNum = STATISTICS.bindUserNum.incrementAndGet();
                 }
 
-                LOGGER.info("receive {}, bindUserNum={}", message, bindUserNum);
+                logger.info("receive {}, bindUserNum={}", message, bindUserNum);
 
             } else if (command == Command.HTTP_PROXY) {
                 HttpResponseMessage message = new HttpResponseMessage(packet, connection);
                 message.decodeBody();
-                LOGGER.info("receive http response, message={}, body={}",
+                logger.info("receive http response, message={}, body={}",
                         message, message.body == null ? null : new String(message.body, Constants.UTF_8));
             }
         }
 
-        LOGGER.debug("receive package={}, chanel={}", msg, ctx.channel());
+        logger.debug("receive package={}, chanel={}", msg, ctx.channel());
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         connection.close();
-        LOGGER.error("caught an ex, channel={}", ctx.channel(), cause);
+        logger.error("caught an ex, channel={}", ctx.channel(), cause);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         int clientNum = STATISTICS.clientNum.incrementAndGet();
-        LOGGER.info("client connect channel={}, clientNum={}", ctx.channel(), clientNum);
+        logger.info("client connect channel={}, clientNum={}", ctx.channel(), clientNum);
 
         for (int i = 0; i < 3; i++) {
             if (clientConfig != null) break;
@@ -187,8 +187,8 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         int clientNum = STATISTICS.clientNum.decrementAndGet();
         connection.close();
-        EventBus.post(new ConnectionCloseEvent(connection));
-        LOGGER.info("client disconnect channel={}, clientNum={}", connection, clientNum);
+        EventBusDelegate.post(new ConnectionCloseEvent(connection));
+        logger.info("client disconnect channel={}, clientNum={}", connection, clientNum);
     }
 
     private void tryFastConnect() {
@@ -226,7 +226,7 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
                 handshake();
             }
         });
-        LOGGER.debug("send fast connect message={}", message);
+        logger.debug("send fast connect message={}", message);
     }
 
     private void bindUser(ClientConfig client) {
@@ -235,7 +235,7 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
         message.tags = "test";
         message.send();
         connection.getSessionContext().setUserId(client.getUserId());
-        LOGGER.debug("send bind user message={}", message);
+        logger.debug("send bind user message={}", message);
     }
 
     private void saveToRedisForFastConnection(ClientConfig client, String sessionId, Long expireTime, byte[] sessionKey) {
@@ -263,7 +263,7 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
         message.osVersion = clientConfig.getOsVersion();
         message.timestamp = System.currentTimeMillis();
         message.send();
-        LOGGER.debug("send handshake message={}", message);
+        logger.debug("send handshake message={}", message);
     }
 
     private void startHeartBeat(final int heartbeat) throws Exception {
@@ -281,20 +281,20 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
 
         if (connection.isReadTimeout()) {
             hbTimeoutTimes++;
-            LOGGER.warn("heartbeat timeout times={}, client={}", hbTimeoutTimes, connection);
+            logger.warn("heartbeat timeout times={}, client={}", hbTimeoutTimes, connection);
         } else {
             hbTimeoutTimes = 0;
         }
 
         if (hbTimeoutTimes >= 2) {
-            LOGGER.warn("heartbeat timeout times={} over limit={}, client={}", hbTimeoutTimes, 2, connection);
+            logger.warn("heartbeat timeout times={} over limit={}, client={}", hbTimeoutTimes, 2, connection);
             hbTimeoutTimes = 0;
             connection.close();
             return false;
         }
 
         if (connection.isWriteTimeout()) {
-            LOGGER.info("send heartbeat ping...");
+            logger.info("send heartbeat ping...");
             connection.send(Packet.HB_PACKET);
         }
 

@@ -40,7 +40,7 @@ import java.util.*;
 @ChannelHandler.Sharable
 public final class AdminHandler extends SimpleChannelInboundHandler<String> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdminHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminHandler.class);
 
     private static final String EOL = "\r\n";
 
@@ -153,7 +153,7 @@ public final class AdminHandler extends SimpleChannelInboundHandler<String> {
             throwable.printStackTrace(new PrintWriter(writer));
             ctx.writeAndFlush(writer.toString());
         }
-        LOGGER.info("receive admin command={}", request);
+        logger.info("receive admin command={}", request);
     }
 
     @Override

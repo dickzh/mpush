@@ -36,7 +36,7 @@ import java.util.List;
 /*package*/ class HttpConnectionPool {
     private static final int maxConnPerHost = IConfig.mp.http.max_conn_per_host;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpConnectionPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpConnectionPool.class);
 
     private final AttributeKey<String> hostKey = AttributeKey.newInstance("host");
 
@@ -50,11 +50,11 @@ import java.util.List;
             Channel channel = it.next();
             it.remove();
             if (channel.isActive()) {
-                LOGGER.debug("tryAcquire channel success, host={}", host);
+                logger.debug("tryAcquire channel success, host={}", host);
                 channel.attr(hostKey).set(host);
                 return channel;
             } else {//链接由于意外情况不可用了, 比如: keepAlive_timeout
-                LOGGER.warn("tryAcquire channel false channel is inactive, host={}", host);
+                logger.warn("tryAcquire channel false channel is inactive, host={}", host);
             }
         }
         return null;
@@ -64,10 +64,10 @@ import java.util.List;
         String host = channel.attr(hostKey).getAndSet(null);
         List<Channel> channels = channelPool.get(host);
         if (channels == null || channels.size() < maxConnPerHost) {
-            LOGGER.debug("tryRelease channel success, host={}", host);
+            logger.debug("tryRelease channel success, host={}", host);
             channelPool.put(host, channel);
         } else {
-            LOGGER.debug("tryRelease channel pool size over limit={}, host={}, channel closed.", maxConnPerHost, host);
+            logger.debug("tryRelease channel pool size over limit={}, host={}, channel closed.", maxConnPerHost, host);
             channel.close();
         }
     }

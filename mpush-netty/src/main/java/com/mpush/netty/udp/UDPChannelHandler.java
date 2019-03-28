@@ -42,7 +42,7 @@ import java.net.NetworkInterface;
  */
 @ChannelHandler.Sharable
 public final class UDPChannelHandler extends ChannelInboundHandlerAdapter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UDPChannelHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(UDPChannelHandler.class);
     private final NettyConnection connection = new NettyConnection();
     private final PacketReceiver receiver;
     private InetAddress multicastAddress;
@@ -58,13 +58,13 @@ public final class UDPChannelHandler extends ChannelInboundHandlerAdapter {
         if (multicastAddress != null) {
             ((DatagramChannel) ctx.channel()).joinGroup(multicastAddress, networkInterface, null).addListener(future -> {
                 if (future.isSuccess()) {
-                    LOGGER.info("join multicast group success, channel={}, group={}", ctx.channel(), multicastAddress);
+                    logger.info("join multicast group success, channel={}, group={}", ctx.channel(), multicastAddress);
                 } else {
-                    LOGGER.error("join multicast group error, channel={}, group={}", ctx.channel(), multicastAddress, future.cause());
+                    logger.error("join multicast group error, channel={}, group={}", ctx.channel(), multicastAddress, future.cause());
                 }
             });
         }
-        LOGGER.info("init udp channel={}", ctx.channel());
+        logger.info("init udp channel={}", ctx.channel());
     }
 
     @Override
@@ -73,13 +73,13 @@ public final class UDPChannelHandler extends ChannelInboundHandlerAdapter {
         if (multicastAddress != null) {
             ((DatagramChannel) ctx.channel()).leaveGroup(multicastAddress, networkInterface, null).addListener(future -> {
                 if (future.isSuccess()) {
-                    LOGGER.info("leave multicast group success, channel={}, group={}", ctx.channel(), multicastAddress);
+                    logger.info("leave multicast group success, channel={}, group={}", ctx.channel(), multicastAddress);
                 } else {
-                    LOGGER.error("leave multicast group error, channel={}, group={}", ctx.channel(), multicastAddress, future.cause());
+                    logger.error("leave multicast group error, channel={}, group={}", ctx.channel(), multicastAddress, future.cause());
                 }
             });
         }
-        LOGGER.info("disconnect udp channel={}, connection={}", ctx.channel(), connection);
+        logger.info("disconnect udp channel={}, connection={}", ctx.channel(), connection);
     }
 
     @Override
@@ -93,7 +93,7 @@ public final class UDPChannelHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         connection.close();
-        LOGGER.error("udp handler caught an exception, channel={}, conn={}", ctx.channel(), connection, cause);
+        logger.error("udp handler caught an exception, channel={}, conn={}", ctx.channel(), connection, cause);
     }
 
     public UDPChannelHandler setMulticastAddress(InetAddress multicastAddress) {

@@ -27,7 +27,7 @@ import com.mpush.api.event.ConnectionCloseEvent;
 import com.mpush.api.event.ConnectionConnectEvent;
 import com.mpush.api.protocol.Packet;
 import com.mpush.netty.connection.NettyConnection;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import com.mpush.tools.log.Logs;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @ChannelHandler.Sharable
 public final class GatewayClientChannelHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GatewayClientChannelHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(GatewayClientChannelHandler.class);
 
     private final ConnectionManager connectionManager;
 
@@ -65,7 +65,7 @@ public final class GatewayClientChannelHandler extends ChannelInboundHandlerAdap
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         Connection connection = connectionManager.get(ctx.channel());
         Logs.CONN.error("client caught ex, conn={}", connection);
-        LOGGER.error("caught an ex, channel={}, conn={}", ctx.channel(), connection, cause);
+        logger.error("caught an ex, channel={}, conn={}", ctx.channel(), connection, cause);
         ctx.close();
     }
 
@@ -75,13 +75,13 @@ public final class GatewayClientChannelHandler extends ChannelInboundHandlerAdap
         Connection connection = new NettyConnection();
         connection.init(ctx.channel(), false);
         connectionManager.add(connection);
-        EventBus.post(new ConnectionConnectEvent(connection));
+        EventBusDelegate.post(new ConnectionConnectEvent(connection));
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Connection connection = connectionManager.removeAndClose(ctx.channel());
-        EventBus.post(new ConnectionCloseEvent(connection));
+        EventBusDelegate.post(new ConnectionCloseEvent(connection));
         Logs.CONN.info("client disconnected conn={}", connection);
     }
 }

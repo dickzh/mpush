@@ -42,7 +42,7 @@ import java.nio.channels.spi.SelectorProvider;
 import static com.mpush.tools.Utils.useNettyEpoll;
 
 public abstract class NettyTCPClient extends BaseService implements Client {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NettyTCPClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(NettyTCPClient.class);
 
     private EventLoopGroup workerGroup;
     protected Bootstrap bootstrap;
@@ -72,10 +72,10 @@ public abstract class NettyTCPClient extends BaseService implements Client {
         return bootstrap.connect(new InetSocketAddress(host, port)).addListener(f -> {
             if (f.isSuccess()) {
                 if (listener != null) listener.onSuccess(port);
-                LOGGER.info("start netty client success, host={}, port={}", host, port);
+                logger.info("start netty client success, host={}, port={}", host, port);
             } else {
                 if (listener != null) listener.onFailure(f.cause());
-                LOGGER.error("start netty client failure, host={}, port={}", host, port, f.cause());
+                logger.error("start netty client failure, host={}, port={}", host, port, f.cause());
             }
         });
     }
@@ -134,7 +134,7 @@ public abstract class NettyTCPClient extends BaseService implements Client {
         if (workerGroup != null) {
             workerGroup.shutdownGracefully();
         }
-        LOGGER.error("netty client [{}] stopped.", this.getClass().getSimpleName());
+        logger.error("netty client [{}] stopped.", this.getClass().getSimpleName());
         listener.onSuccess();
     }
 

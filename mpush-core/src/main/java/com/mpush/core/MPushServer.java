@@ -32,7 +32,7 @@ import com.mpush.core.session.ReusableSessionManager;
 import com.mpush.monitor.service.MonitorService;
 import com.mpush.netty.http.HttpClient;
 import com.mpush.netty.http.NettyHttpClient;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 
 import static com.mpush.tools.config.IConfig.mp.net.tcpGateway;
 
@@ -70,7 +70,7 @@ public final class MPushServer implements MPushContext {
         websocketServerNode = ServerNodes.ws();
 
         monitorService = new MonitorService();
-        EventBus.create(monitorService.getThreadPoolManager().getEventBusExecutor());
+        EventBusDelegate.create(monitorService.getThreadPoolManager().getEventBusExecutor());
 
         reusableSessionManager = new ReusableSessionManager();
 

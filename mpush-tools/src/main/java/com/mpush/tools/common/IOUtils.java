@@ -36,14 +36,14 @@ import java.util.zip.InflaterInputStream;
  * @author ohun@live.cn
  */
 public final class IOUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(IOUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(IOUtils.class);
 
     public static void close(Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
             } catch (Exception e) {
-                LOGGER.error("close closeable ex", e);
+                logger.error("close closeable ex", e);
             }
         }
     }
@@ -59,7 +59,7 @@ public final class IOUtils {
             zipOut.finish();
             zipOut.close();
         } catch (IOException e) {
-            LOGGER.error("compress ex", e);
+            logger.error("compress ex", e);
             return Constants.EMPTY_BYTES;
         } finally {
             close(zipOut);
@@ -79,7 +79,7 @@ public final class IOUtils {
                 out.write(buffer, 0, length);
             }
         } catch (IOException e) {
-            LOGGER.error("decompress ex", e);
+            logger.error("decompress ex", e);
             return Constants.EMPTY_BYTES;
         } finally {
             close(zipIn);

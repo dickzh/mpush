@@ -22,7 +22,7 @@ package com.mpush.bootstrap.job;
 import com.mpush.api.event.ServerShutdownEvent;
 import com.mpush.api.event.ServerStartupEvent;
 import com.mpush.api.spi.core.ServerEventListenerFactory;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import com.mpush.tools.log.Logs;
 
 import java.util.function.Supplier;
@@ -76,7 +76,7 @@ public final class BootChain {
         setNext(new BootJob() {
             @Override
             protected void start() {
-                EventBus.post(new ServerStartupEvent());
+                EventBusDelegate.post(new ServerStartupEvent());
                 Logs.Console.info("bootstrap chain started.");
                 Logs.Console.info("===================================================================");
                 Logs.Console.info("====================MPUSH SERVER START SUCCESS=====================");
@@ -86,7 +86,7 @@ public final class BootChain {
             @Override
             protected void stop() {
                 Logs.Console.info("bootstrap chain stopping...");
-                EventBus.post(new ServerShutdownEvent());
+                EventBusDelegate.post(new ServerShutdownEvent());
             }
 
             @Override

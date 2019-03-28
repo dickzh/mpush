@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * @author ohun@live.cn
  */
 public final class Utils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+    private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
     private static String LOCAL_IP;
 
@@ -62,7 +62,7 @@ public final class Utils {
                 Class.forName("io.netty.channel.epoll.Native");
                 return true;
             } catch (Throwable error) {
-                LOGGER.warn("can not load netty epoll, switch nio model.");
+                logger.warn("can not load netty epoll, switch nio model.");
             }
         }
         return false;
@@ -137,10 +137,10 @@ public final class Utils {
                     }
                 }
             }
-            LOGGER.debug("getInetAddress is null, getLocal={}", getLocal);
+            logger.debug("getInetAddress is null, getLocal={}", getLocal);
             return getLocal ? "127.0.0.1" : null;
         } catch (Throwable e) {
-            LOGGER.error("getInetAddress exception", e);
+            logger.error("getInetAddress exception", e);
             return getLocal ? "127.0.0.1" : null;
         }
     }

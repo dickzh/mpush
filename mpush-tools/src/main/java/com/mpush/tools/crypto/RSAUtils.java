@@ -44,7 +44,7 @@ import java.security.spec.X509EncodedKeySpec;
  * 非对称加密算法可以用来对对称加密的密钥加密，这样保证密钥的安全也就保证了数据的安全
  */
 public final class RSAUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RSAUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(RSAUtils.class);
 
     /**
      * 密钥位数
@@ -93,7 +93,7 @@ public final class RSAUtils {
             RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
             return Pair.of(publicKey, privateKey);
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("getKeys ex ", e);
+            logger.error("getKeys ex ", e);
         }
         return null;
     }
@@ -188,7 +188,7 @@ public final class RSAUtils {
             RSAPublicKeySpec keySpec = new RSAPublicKeySpec(b1, b2);
             return (RSAPublicKey) keyFactory.generatePublic(keySpec);
         } catch (Exception e) {
-            LOGGER.error("getPublicKey ex modulus={}, exponent={}", modulus, exponent, e);
+            logger.error("getPublicKey ex modulus={}, exponent={}", modulus, exponent, e);
             throw new CryptoException("Get PublicKey ex", e);
         }
     }
@@ -211,7 +211,7 @@ public final class RSAUtils {
             RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(b1, b2);
             return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
         } catch (Exception e) {
-            LOGGER.error("getPrivateKey ex modulus={}, exponent={}", modulus, exponent, e);
+            logger.error("getPrivateKey ex modulus={}, exponent={}", modulus, exponent, e);
             throw new CryptoException("Get PrivateKey ex", e);
         }
     }
@@ -233,7 +233,7 @@ public final class RSAUtils {
             //如果明文长度大于模长-11则要分组加密
             return doFinal(cipher, data, key_len - 11);
         } catch (Exception e) {
-            LOGGER.error("encryptByPublicKey ex", e);
+            logger.error("encryptByPublicKey ex", e);
             throw new CryptoException("RSA encrypt ex", e);
         }
     }
@@ -254,7 +254,7 @@ public final class RSAUtils {
             //如果密文长度大于模长则要分组解密
             return doFinal(cipher, data, key_len);
         } catch (Exception e) {
-            LOGGER.error("decryptByPrivateKey ex", e);
+            logger.error("decryptByPrivateKey ex", e);
             throw new CryptoException("RSA decrypt ex", e);
         }
     }

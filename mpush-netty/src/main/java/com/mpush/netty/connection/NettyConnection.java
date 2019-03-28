@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author ohun@live.cn
  */
 public final class NettyConnection implements Connection, ChannelFutureListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NettyConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(NettyConnection.class);
     private SessionContext context;
     private Channel channel;
     private volatile byte status = STATUS_NEW;
@@ -136,7 +136,7 @@ public final class NettyConnection implements Connection, ChannelFutureListener 
         if (future.isSuccess()) {
             lastWriteTime = System.currentTimeMillis();
         } else {
-            LOGGER.error("connection send msg error", future.cause());
+            logger.error("connection send msg error", future.cause());
             Logs.CONN.error("connection send msg error={}, conn={}", future.cause().getMessage(), this);
         }
     }

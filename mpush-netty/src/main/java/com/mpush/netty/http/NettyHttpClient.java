@@ -59,7 +59,7 @@ import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
  * @author ohun@live.cn
  */
 public class NettyHttpClient extends BaseService implements HttpClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NettyHttpClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(NettyHttpClient.class);
     private static final int maxContentLength = (int) IConfig.mp.http.max_content_length;
     /*package*/ final AttributeKey<RequestContext> requestKey = AttributeKey.newInstance("request");
     /*package*/ final HttpConnectionPool pool = new HttpConnectionPool();
@@ -83,16 +83,16 @@ public class NettyHttpClient extends BaseService implements HttpClient {
         Channel channel = pool.tryAcquire(host);
         if (channel == null) {
             final long startCreate = System.currentTimeMillis();
-            LOGGER.debug("create new channel, host={}", host);
+            logger.debug("create new channel, host={}", host);
             ChannelFuture f = b.connect(host, port);
             f.addListener((ChannelFutureListener) future -> {
-                LOGGER.debug("create new channel cost={}", (System.currentTimeMillis() - startCreate));
+                logger.debug("create new channel cost={}", (System.currentTimeMillis() - startCreate));
                 if (future.isSuccess()) {//3.1.把请求写到http server
                     writeRequest(future.channel(), context);
                 } else {//3.2如果链接创建失败，直接返回客户端网关超时
                     context.tryDone();
                     context.onFailure(504, "Gateway Timeout");
-                    LOGGER.warn("create new channel failure, request={}", context);
+                    logger.warn("create new channel failure, request={}", context);
                 }
             });
         } else {
@@ -109,7 +109,7 @@ public class NettyHttpClient extends BaseService implements HttpClient {
                 RequestContext info = future.channel().attr(requestKey).getAndSet(null);
                 info.tryDone();
                 info.onFailure(503, "Service Unavailable");
-                LOGGER.debug("request failure request={}", info);
+                logger.debug("request failure request={}", info);
                 pool.tryRelease(future.channel());
             }
         });

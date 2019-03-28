@@ -37,7 +37,7 @@ import java.util.Arrays;
  * @author ohun@live.cn
  */
 public final class AESUtils {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AESUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(AESUtils.class);
     public static final String KEY_ALGORITHM = "AES";
     public static final String KEY_ALGORITHM_PADDING = "AES/CBC/PKCS5Padding";
 
@@ -68,7 +68,7 @@ public final class AESUtils {
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, zeroIv);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            LOGGER.error("AES encrypt ex, iv={}, key={}",
+            logger.error("AES encrypt ex, iv={}, key={}",
                     Arrays.toString(zeroIv.getIV()),
                     Arrays.toString(keySpec.getEncoded()), e);
             throw new CryptoException("AES encrypt ex", e);
@@ -84,7 +84,7 @@ public final class AESUtils {
             cipher.init(Cipher.DECRYPT_MODE, keySpec, zeroIv);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            LOGGER.error("AES decrypt ex, iv={}, key={}",
+            logger.error("AES decrypt ex, iv={}, key={}",
                     Arrays.toString(zeroIv.getIV()),
                     Arrays.toString(keySpec.getEncoded()), e);
             throw new CryptoException("AES decrypt ex", e);

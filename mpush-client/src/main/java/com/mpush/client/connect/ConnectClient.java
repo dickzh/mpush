@@ -22,7 +22,7 @@ package com.mpush.client.connect;
 import com.google.common.eventbus.Subscribe;
 import com.mpush.api.event.ConnectionCloseEvent;
 import com.mpush.netty.client.NettyTCPClient;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import io.netty.channel.ChannelHandler;
 
 public class ConnectClient extends NettyTCPClient {
@@ -30,7 +30,7 @@ public class ConnectClient extends NettyTCPClient {
 
     public ConnectClient(String host, int port, ClientConfig config) {
         handler = new ConnClientChannelHandler(config);
-        EventBus.register(this);
+        EventBusDelegate.register(this);
     }
 
     @Override

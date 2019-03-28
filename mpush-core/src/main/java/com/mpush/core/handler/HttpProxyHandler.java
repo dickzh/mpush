@@ -53,7 +53,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * @author ohun@live.cn
  */
 public class HttpProxyHandler extends BaseMessageHandler<HttpRequestMessage> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpProxyHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpProxyHandler.class);
     private final DnsMappingManager dnsMappingManager = DnsMappingManager.create();
     private final HttpClient httpClient;
 
@@ -98,7 +98,7 @@ public class HttpProxyHandler extends BaseMessageHandler<HttpRequestMessage> {
                     .setStatusCode(502)
                     .setReasonPhrase("Bad Gateway")
                     .sendRaw();
-            LOGGER.error("send request ex, message=" + message, e);
+            logger.error("send request ex, message=" + message, e);
             Logs.HTTP.error("send proxy request ex, request={}, error={}", message, e.getMessage());
         } finally {
             Profiler.release();
@@ -154,7 +154,7 @@ public class HttpProxyHandler extends BaseMessageHandler<HttpRequestMessage> {
                     .setReasonPhrase("Bad Gateway")
                     .sendRaw();
 
-            LOGGER.error("send proxy request ex end request={}, response={}", request, 502, throwable);
+            logger.error("send proxy request ex end request={}, response={}", request, 502, throwable);
             Logs.HTTP.error("send proxy request ex end request={}, response={}, error={}", request, 502, throwable.getMessage());
         }
 

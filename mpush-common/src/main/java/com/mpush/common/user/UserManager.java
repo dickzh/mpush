@@ -43,7 +43,7 @@ import java.util.Set;
  * 每台机器的在线列表是分开存的，如果都存储在一起，某台机器挂了，反而不好处理。
  */
 public final class UserManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserManager.class);
 
     private final String onlineUserListKey = CacheKeys.getOnlineUserListKey(ConfigTools.getPublicIp());
 
@@ -86,12 +86,12 @@ public final class UserManager {
 
     public void addToOnlineList(String userId) {
         cacheManager.zAdd(onlineUserListKey, userId);
-        LOGGER.info("user online {}", userId);
+        logger.info("user online {}", userId);
     }
 
     public void remFormOnlineList(String userId) {
         cacheManager.zRem(onlineUserListKey, userId);
-        LOGGER.info("user offline {}", userId);
+        logger.info("user offline {}", userId);
     }
 
     //在线用户数量

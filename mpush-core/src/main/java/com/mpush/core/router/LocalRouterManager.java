@@ -26,7 +26,7 @@ import com.mpush.api.connection.SessionContext;
 import com.mpush.api.event.ConnectionCloseEvent;
 import com.mpush.api.event.UserOfflineEvent;
 import com.mpush.api.router.RouterManager;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import com.mpush.tools.event.EventConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ohun@live.cn
  */
 public final class LocalRouterManager extends EventConsumer implements RouterManager<LocalRouter> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalRouterManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(LocalRouterManager.class);
     private static final Map<Integer, LocalRouter> EMPTY = new HashMap<>(0);
 
     /**
@@ -53,14 +53,14 @@ public final class LocalRouterManager extends EventConsumer implements RouterMan
 
     @Override
     public LocalRouter register(String userId, LocalRouter router) {
-        LOGGER.info("register local router success userId={}, router={}", userId, router);
+        logger.info("register local router success userId={}, router={}", userId, router);
         return routers.computeIfAbsent(userId, s -> new HashMap<>(1)).put(router.getClientType(), router);
     }
 
     @Override
     public boolean unRegister(String userId, int clientType) {
         LocalRouter router = routers.getOrDefault(userId, EMPTY).remove(clientType);
-        LOGGER.info("unRegister local router success userId={}, router={}", userId, router);
+        logger.info("unRegister local router success userId={}, router={}", userId, router);
         return true;
     }
 
@@ -72,7 +72,7 @@ public final class LocalRouterManager extends EventConsumer implements RouterMan
     @Override
     public LocalRouter lookup(String userId, int clientType) {
         LocalRouter router = routers.getOrDefault(userId, EMPTY).get(clientType);
-        LOGGER.info("lookup local router userId={}, router={}", userId, router);
+        logger.info("lookup local router userId={}, router={}", userId, router);
         return router;
     }
 
@@ -106,10 +106,10 @@ public final class LocalRouterManager extends EventConsumer implements RouterMan
             routers.getOrDefault(userId, EMPTY).remove(clientType);
             //4. 发送用户下线事件, 只有老的路由存在的情况下才发送，因为有可能又用户重连了，而老的链接又是在新连接之后才断开的
             //这个时候就会有问题，会导致用户变成下线状态，实际用户应该是在线的。
-            EventBus.post(new UserOfflineEvent(event.connection, userId));
-            LOGGER.info("clean disconnected local route, userId={}, route={}", userId, localRouter);
+            EventBusDelegate.post(new UserOfflineEvent(event.connection, userId));
+            logger.info("clean disconnected local route, userId={}, route={}", userId, localRouter);
         } else { //如果不相等，则log一下
-            LOGGER.info("clean disconnected local route, not clean:userId={}, route={}", userId, localRouter);
+            logger.info("clean disconnected local route, not clean:userId={}, route={}", userId, localRouter);
         }
     }
 }

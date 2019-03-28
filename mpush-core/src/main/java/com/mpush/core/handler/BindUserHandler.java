@@ -39,7 +39,7 @@ import com.mpush.core.MPushServer;
 import com.mpush.core.router.LocalRouter;
 import com.mpush.core.router.LocalRouterManager;
 import com.mpush.core.router.RouterCenter;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import com.mpush.tools.log.Logs;
 
 /**
@@ -102,7 +102,7 @@ public final class BindUserHandler extends BaseMessageHandler<BindUserMessage> {
             if (success) {
                 context.userId = message.userId;
                 context.tags = message.tags;
-                EventBus.post(new UserOnlineEvent(message.getConnection(), message.userId));
+                EventBusDelegate.post(new UserOnlineEvent(message.getConnection(), message.userId));
                 OkMessage.from(message).setData("bind success").sendRaw();
                 Logs.CONN.info("bind user success, userId={}, session={}", message.userId, context);
             } else {
@@ -158,7 +158,7 @@ public final class BindUserHandler extends BaseMessageHandler<BindUserMessage> {
             if (unRegisterSuccess) {
                 context.userId = null;
                 context.tags = null;
-                EventBus.post(new UserOfflineEvent(message.getConnection(), userId));
+                EventBusDelegate.post(new UserOfflineEvent(message.getConnection(), userId));
                 OkMessage.from(message).setData("unbind success").sendRaw();
                 Logs.CONN.info("unbind user success, userId={}, session={}", userId, context);
             } else {

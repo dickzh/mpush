@@ -34,7 +34,7 @@ import static com.mpush.tools.thread.pool.ThreadPoolConfig.REJECTED_POLICY_CALLE
 
 public final class DumpThreadRejectedHandler implements RejectedExecutionHandler {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(DumpThreadRejectedHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(DumpThreadRejectedHandler.class);
 
     private volatile boolean dumping = false;
 
@@ -51,7 +51,7 @@ public final class DumpThreadRejectedHandler implements RejectedExecutionHandler
 
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-        LOGGER.warn("one task rejected, poolConfig={}, poolInfo={}", poolConfig, Utils.getPoolInfo(e));
+        logger.warn("one task rejected, poolConfig={}, poolInfo={}", poolConfig, Utils.getPoolInfo(e));
         if (!dumping) {
             dumping = true;
             dumpJVMInfo();
@@ -67,9 +67,9 @@ public final class DumpThreadRejectedHandler implements RejectedExecutionHandler
     }
 
     private void dumpJVMInfo() {
-        LOGGER.info("start dump jvm info");
+        logger.info("start dump jvm info");
         JVMUtil.dumpJstack(DUMP_DIR + "/" + poolConfig.getName());
-        LOGGER.info("end dump jvm info");
+        logger.info("end dump jvm info");
     }
 }
 

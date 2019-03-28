@@ -29,7 +29,7 @@ import com.mpush.api.protocol.Packet;
 import com.mpush.netty.connection.NettyConnection;
 import com.mpush.tools.common.Profiler;
 import com.mpush.tools.config.IConfig;
-import com.mpush.tools.event.EventBus;
+import com.mpush.tools.event.EventBusDelegate;
 import com.mpush.tools.log.Logs;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @ChannelHandler.Sharable
 public final class ServerChannelHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServerChannelHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServerChannelHandler.class);
 
     private static final long profile_slowly_limit = IConfig.mp.monitor.profile_slowly_duration.toMillis();
 
@@ -67,7 +67,7 @@ public final class ServerChannelHandler extends ChannelInboundHandlerAdapter {
         try {
             Profiler.start("time cost on [channel read]: ", packet.toString());
             Connection connection = connectionManager.get(ctx.channel());
-            LOGGER.debug("channelRead conn={}, packet={}", ctx.channel(), connection.getSessionContext(), msg);
+            logger.debug("channelRead conn={}, packet={}", ctx.channel(), connection.getSessionContext(), msg);
             connection.updateLastReadTime();
             receiver.onReceive(packet, connection);
         } finally {
@@ -83,7 +83,7 @@ public final class ServerChannelHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         Connection connection = connectionManager.get(ctx.channel());
         Logs.CONN.error("client caught ex, conn={}", connection);
-        LOGGER.error("caught an ex, channel={}, conn={}", ctx.channel(), connection, cause);
+        logger.error("caught an ex, channel={}, conn={}", ctx.channel(), connection, cause);
         ctx.close();
     }
 
@@ -98,7 +98,7 @@ public final class ServerChannelHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Connection connection = connectionManager.removeAndClose(ctx.channel());
-        EventBus.post(new ConnectionCloseEvent(connection));
+        EventBusDelegate.post(new ConnectionCloseEvent(connection));
         Logs.CONN.info("client disconnected conn={}", connection);
     }
 }

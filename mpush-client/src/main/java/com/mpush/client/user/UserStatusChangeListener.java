@@ -36,7 +36,7 @@ import static com.mpush.api.event.Topics.ONLINE_CHANNEL;
  */
 public class UserStatusChangeListener implements MQMessageReceiver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserStatusChangeListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserStatusChangeListener.class);
 
     //只需要一台机器注册online、offline 消息通道
     public UserStatusChangeListener() {

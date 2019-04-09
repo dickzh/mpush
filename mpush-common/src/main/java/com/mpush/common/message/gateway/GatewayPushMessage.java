@@ -182,7 +182,7 @@ public final class GatewayPushMessage extends ByteBufMessage implements IPushMes
         if (tags != null) {
             return new TagsCondition(tags);
         }
-        return AwaysPassCondition.I;
+        return AwaysPassCondition.instance;
     }
 
 

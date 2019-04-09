@@ -32,6 +32,6 @@ import com.mpush.api.srd.ServiceRegistry;
 public final class ZKRegistryFactory implements ServiceRegistryFactory {
     @Override
     public ServiceRegistry get() {
-        return ZKServiceRegistryAndDiscovery.I;
+        return ZKServiceRegistryAndDiscovery.instance;
     }
 }

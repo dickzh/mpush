@@ -131,7 +131,7 @@ public final class BroadcastPushTask implements PushTask {
     }
 
     private boolean checkCondition(Condition condition, Connection connection) {
-        if (condition == AwaysPassCondition.I) return true;
+        if (condition == AwaysPassCondition.instance) return true;
         SessionContext sessionContext = connection.getSessionContext();
         Map<String, Object> env = new HashMap<>();
         env.put("userId", sessionContext.userId);

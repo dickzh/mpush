@@ -36,9 +36,9 @@ public class CipherBoxTest {
     @Test
     public void testGetPublicKey() throws Exception {
         for (int i = 0; i < 1000; i++) {
-            byte[] clientKey = CipherBox.I.randomAESKey();
-            byte[] serverKey = CipherBox.I.randomAESKey();
-            byte[] sessionKey = CipherBox.I.mixKey(clientKey, serverKey);
+            byte[] clientKey = CipherBox.instance.randomAESKey();
+            byte[] serverKey = CipherBox.instance.randomAESKey();
+            byte[] sessionKey = CipherBox.instance.mixKey(clientKey, serverKey);
             //System.out.println("clientKey:" + Arrays.toString(clientKey));
             //System.out.println("serverKey:" + Arrays.toString(serverKey));
             System.out.println("sessionKey:" + Arrays.toString(sessionKey));

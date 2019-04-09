@@ -33,7 +33,7 @@ import java.security.interfaces.RSAPublicKey;
  */
 public final class CipherBox {
     public final int aesKeyLength = IConfig.mp.security.aes_key_length;
-    public static final CipherBox I = new CipherBox();
+    public static final CipherBox instance = new CipherBox();
     private SecureRandom random = new SecureRandom();
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;

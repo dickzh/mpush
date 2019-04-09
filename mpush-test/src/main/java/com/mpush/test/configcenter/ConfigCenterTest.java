@@ -30,7 +30,7 @@ import java.util.*;
 public class ConfigCenterTest {
     @Before
     public void setUp() throws Exception {
-        // ConfigManager.I.getLocalIp();
+        // ConfigManager.instance.getLocalIp();
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ConfigCenterTest {
     public void testLoad2() {
         Map<String, String> map = new HashMap<>();
         System.out.println("public interface mp {");
-        System.out.printf("  Config cfg = ConfigManager.I.mp().toConfig();%n%n");
+        System.out.printf("  Config cfg = ConfigManager.instance.mp().toConfig();%n%n");
         IConfig.mp.cfg.root().forEach((s, configValue) -> print2(s, configValue, "mp", 1));
         System.out.println("}");
     }

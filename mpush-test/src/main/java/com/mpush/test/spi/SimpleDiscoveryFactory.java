@@ -32,6 +32,6 @@ import com.mpush.api.srd.ServiceDiscovery;
 public final class SimpleDiscoveryFactory implements ServiceDiscoveryFactory {
     @Override
     public ServiceDiscovery get() {
-        return FileSrd.I;
+        return FileSrd.instance;
     }
 }

@@ -38,12 +38,12 @@ import static org.apache.curator.utils.ZKPaths.PATH_SEPARATOR;
  */
 public final class ZKServiceRegistryAndDiscovery extends BaseService implements ServiceRegistry, ServiceDiscovery {
 
-    public static final ZKServiceRegistryAndDiscovery I = new ZKServiceRegistryAndDiscovery();
+    public static final ZKServiceRegistryAndDiscovery instance = new ZKServiceRegistryAndDiscovery();
 
     private final ZKClient client;
 
     public ZKServiceRegistryAndDiscovery() {
-        this.client = ZKClient.I;
+        this.client = ZKClient.instance;
     }
 
     @Override

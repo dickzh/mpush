@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * redis 对外封装接口
  */
 public final class RedisManager implements CacheManager {
-    public static final RedisManager I = new RedisManager();
+    public static final RedisManager instance = new RedisManager();
 
     private final RedisConnectionFactory factory = new RedisConnectionFactory();
 

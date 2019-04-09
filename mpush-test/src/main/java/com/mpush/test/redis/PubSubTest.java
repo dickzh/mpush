@@ -35,30 +35,30 @@ public class PubSubTest {
     @Test
     public void subpubTest() {
         
-        RedisManager.I.subscribe(listenerDispatcher.getSubscriber(), "/hello/123");
-        RedisManager.I.subscribe(listenerDispatcher.getSubscriber(), "/hello/124");
-        RedisManager.I.publish("/hello/123", "123");
-        RedisManager.I.publish("/hello/124", "124");
+        RedisManager.instance.subscribe(listenerDispatcher.getSubscriber(), "/hello/123");
+        RedisManager.instance.subscribe(listenerDispatcher.getSubscriber(), "/hello/124");
+        RedisManager.instance.publish("/hello/123", "123");
+        RedisManager.instance.publish("/hello/124", "124");
     }
 
     @Test
     public void pubsubTest() {
-        RedisManager.I.publish("/hello/123", "123");
-        RedisManager.I.publish("/hello/124", "124");
-        RedisManager.I.subscribe(listenerDispatcher.getSubscriber(), "/hello/123");
-        RedisManager.I.subscribe(listenerDispatcher.getSubscriber(), "/hello/124");
+        RedisManager.instance.publish("/hello/123", "123");
+        RedisManager.instance.publish("/hello/124", "124");
+        RedisManager.instance.subscribe(listenerDispatcher.getSubscriber(), "/hello/123");
+        RedisManager.instance.subscribe(listenerDispatcher.getSubscriber(), "/hello/124");
     }
 
     @Test
     public void pubTest() {
-        RedisManager.I.publish("/hello/123", "123");
-        RedisManager.I.publish("/hello/124", "124");
+        RedisManager.instance.publish("/hello/123", "123");
+        RedisManager.instance.publish("/hello/124", "124");
     }
 
     @Test
     public void subTest() {
-        RedisManager.I.subscribe(listenerDispatcher.getSubscriber(), "/hello/123");
-        RedisManager.I.subscribe(listenerDispatcher.getSubscriber(), "/hello/124");
+        RedisManager.instance.subscribe(listenerDispatcher.getSubscriber(), "/hello/123");
+        RedisManager.instance.subscribe(listenerDispatcher.getSubscriber(), "/hello/124");
         LockSupport.park();
     }
 

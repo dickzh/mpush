@@ -55,6 +55,6 @@ public final class RsaCipher implements Cipher {
     }
 
     public static RsaCipher create() {
-        return new RsaCipher(CipherBox.I.getPrivateKey(), CipherBox.I.getPublicKey());
+        return new RsaCipher(CipherBox.instance.getPrivateKey(), CipherBox.instance.getPublicKey());
     }
 }

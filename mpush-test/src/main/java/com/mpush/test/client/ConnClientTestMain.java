@@ -94,8 +94,8 @@ public class ConnClientTestMain {
             String osVersion = "1.0.1";
             String userId = userPrefix + "user-" + i;
             String deviceId = userPrefix + "test-device-id-" + i;
-            byte[] clientKey = CipherBox.I.randomAESKey();
-            byte[] iv = CipherBox.I.randomAESIV();
+            byte[] clientKey = CipherBox.instance.randomAESKey();
+            byte[] iv = CipherBox.instance.randomAESIV();
 
             ClientConfig config = new ClientConfig();
             config.setClientKey(clientKey);

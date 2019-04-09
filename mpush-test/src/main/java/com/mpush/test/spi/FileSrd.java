@@ -35,7 +35,7 @@ import java.util.List;
  */
 public final class FileSrd extends BaseService implements ServiceRegistry, ServiceDiscovery {
 
-    public static final FileSrd I = new FileSrd();
+    public static final FileSrd instance = new FileSrd();
 
     @Override
     public void start(Listener listener) {
@@ -62,17 +62,17 @@ public final class FileSrd extends BaseService implements ServiceRegistry, Servi
 
     @Override
     public void register(ServiceNode node) {
-        FileCacheManger.I.hset(node.serviceName(), node.nodeId(), Jsons.toJson(node));
+        FileCacheManger.instance.hset(node.serviceName(), node.nodeId(), Jsons.toJson(node));
     }
 
     @Override
     public void deregister(ServiceNode node) {
-        FileCacheManger.I.hdel(node.serviceName(), node.nodeId());
+        FileCacheManger.instance.hdel(node.serviceName(), node.nodeId());
     }
 
     @Override
     public List<ServiceNode> lookup(String path) {
-        return Lists.newArrayList(FileCacheManger.I.hgetAll(path, CommonServiceNode.class).values());
+        return Lists.newArrayList(FileCacheManger.instance.hgetAll(path, CommonServiceNode.class).values());
     }
 
     @Override

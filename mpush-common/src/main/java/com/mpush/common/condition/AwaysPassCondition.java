@@ -29,7 +29,7 @@ import java.util.Map;
  * @author ohun@live.cn (夜色)
  */
 public final class AwaysPassCondition implements Condition {
-    public static final Condition I = new AwaysPassCondition();
+    public static final Condition instance = new AwaysPassCondition();
 
     @Override
     public boolean test(Map<String, Object> env) {

@@ -32,6 +32,6 @@ import com.mpush.api.spi.common.CacheManagerFactory;
 public final class RedisCacheManagerFactory implements CacheManagerFactory {
     @Override
     public CacheManager get() {
-        return RedisManager.I;
+        return RedisManager.instance;
     }
 }

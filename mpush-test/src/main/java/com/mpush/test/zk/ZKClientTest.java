@@ -77,17 +77,17 @@ public final class ZKClientTest {
 
     @Test
     public void testZK() throws Exception {
-        ZKClient.I.syncStart();
-        ZKClient.I.registerEphemeral(ServerNodes.gs().serviceName(), "3");
-        ZKClient.I.registerEphemeral(ServerNodes.gs().serviceName(), "4");
-        System.err.println("==================" + ZKClient.I.getChildrenKeys(ServiceNames.GATEWAY_SERVER));
-        List<String> rawData = ZKClient.I.getChildrenKeys(ServiceNames.GATEWAY_SERVER);
+        ZKClient.instance.syncStart();
+        ZKClient.instance.registerEphemeral(ServerNodes.gs().serviceName(), "3");
+        ZKClient.instance.registerEphemeral(ServerNodes.gs().serviceName(), "4");
+        System.err.println("==================" + ZKClient.instance.getChildrenKeys(ServiceNames.GATEWAY_SERVER));
+        List<String> rawData = ZKClient.instance.getChildrenKeys(ServiceNames.GATEWAY_SERVER);
         if (rawData == null || rawData.isEmpty()) {
             return;
         }
         for (String raw : rawData) {
             String fullPath = ServiceNames.GATEWAY_SERVER + PATH_SEPARATOR + raw;
-            System.err.println("==================" + ZKClient.I.get(fullPath));
+            System.err.println("==================" + ZKClient.instance.get(fullPath));
         }
 
     }

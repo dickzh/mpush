@@ -32,6 +32,6 @@ import com.mpush.api.srd.ServiceDiscovery;
 public final class ZKDiscoveryFactory implements ServiceDiscoveryFactory {
     @Override
     public ServiceDiscovery get() {
-        return ZKServiceRegistryAndDiscovery.I;
+        return ZKServiceRegistryAndDiscovery.instance;
     }
 }

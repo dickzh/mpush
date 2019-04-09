@@ -27,7 +27,7 @@ import com.mpush.api.spi.router.ClientClassifierFactory;
  * @author ohun@live.cn (夜色)
  */
 public interface ClientClassifier {
-    ClientClassifier I = ClientClassifierFactory.create();
+    ClientClassifier instance = ClientClassifierFactory.create();
 
     int getClientType(String osName);
 }

@@ -32,6 +32,6 @@ import com.mpush.api.srd.ServiceRegistry;
 public final class SimpleRegistryFactory implements ServiceRegistryFactory {
     @Override
     public ServiceRegistry get() {
-        return FileSrd.I;
+        return FileSrd.instance;
     }
 }

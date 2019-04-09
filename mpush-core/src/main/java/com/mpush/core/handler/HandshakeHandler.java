@@ -69,13 +69,13 @@ public final class HandshakeHandler extends BaseMessageHandler<HandshakeMessage>
     private void doSecurity(HandshakeMessage message) {
         byte[] iv = message.iv;//AES密钥向量16位
         byte[] clientKey = message.clientKey;//客户端随机数16位
-        byte[] serverKey = CipherBox.I.randomAESKey();//服务端随机数16位
-        byte[] sessionKey = CipherBox.I.mixKey(clientKey, serverKey);//会话密钥16位
+        byte[] serverKey = CipherBox.instance.randomAESKey();//服务端随机数16位
+        byte[] sessionKey = CipherBox.instance.mixKey(clientKey, serverKey);//会话密钥16位
 
         //1.校验客户端消息字段
         if (Strings.isNullOrEmpty(message.deviceId)
-                || iv.length != CipherBox.I.getAesKeyLength()
-                || clientKey.length != CipherBox.I.getAesKeyLength()) {
+                || iv.length != CipherBox.instance.getAesKeyLength()
+                || clientKey.length != CipherBox.instance.getAesKeyLength()) {
             ErrorMessage.from(message).setReason("Param invalid").close();
             Logs.CONN.error("handshake failure, message={}, conn={}", message, message.getConnection());
             return;

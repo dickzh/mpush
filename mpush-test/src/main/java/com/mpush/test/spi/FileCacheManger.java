@@ -40,7 +40,7 @@ import java.util.concurrent.*;
  */
 @SuppressWarnings("unchecked")
 public final class FileCacheManger implements CacheManager {
-    public static final FileCacheManger I = new FileCacheManger();
+    public static final FileCacheManger instance = new FileCacheManger();
     private Map<String, Object> cache = new ConcurrentHashMap<>();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private long lastModified = 0;

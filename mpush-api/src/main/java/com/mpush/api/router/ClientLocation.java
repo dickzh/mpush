@@ -116,7 +116,7 @@ public final class ClientLocation {
 
     public int getClientType() {
         if (clientType == 0) {
-            clientType = ClientClassifier.I.getClientType(osName);
+            clientType = ClientClassifier.instance.getClientType(osName);
         }
         return clientType;
     }

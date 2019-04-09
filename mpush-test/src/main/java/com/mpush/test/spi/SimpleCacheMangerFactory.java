@@ -32,6 +32,6 @@ import com.mpush.api.spi.common.CacheManagerFactory;
 public final class SimpleCacheMangerFactory implements CacheManagerFactory {
     @Override
     public CacheManager get() {
-        return FileCacheManger.I;
+        return FileCacheManger.instance;
     }
 }

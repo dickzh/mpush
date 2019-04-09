@@ -22,12 +22,10 @@ package com.mpush.cache.redis.mq;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mpush.api.MPushContext;
-import com.mpush.api.spi.common.ExecutorFactory;
 import com.mpush.api.spi.common.MQClient;
 import com.mpush.api.spi.common.MQMessageReceiver;
 import com.mpush.cache.redis.manager.RedisManager;
 import com.mpush.monitor.service.MonitorService;
-import com.mpush.monitor.service.ThreadPoolManager;
 import com.mpush.tools.log.Logs;
 
 import java.util.List;
@@ -65,12 +63,12 @@ public final class ListenerDispatcher implements MQClient {
 
     public void subscribe(String channel, MQMessageReceiver listener) {
         subscribes.computeIfAbsent(channel, k -> Lists.newArrayList()).add(listener);
-        RedisManager.I.subscribe(subscriber, channel);
+        RedisManager.instance.subscribe(subscriber, channel);
     }
 
     @Override
     public void publish(String topic, Object message) {
-        RedisManager.I.publish(topic, message);
+        RedisManager.instance.publish(topic, message);
     }
 
     public Subscriber getSubscriber() {

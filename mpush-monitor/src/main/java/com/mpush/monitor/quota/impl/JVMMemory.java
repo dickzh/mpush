@@ -39,7 +39,7 @@ public class JVMMemory implements MemoryQuota {
 
     private final List<String> psSurvivorName = Lists.newArrayList("Par Survivor Space", "Survivor Space", "PS Survivor Space", "G1 Survivor");
 
-    public static final JVMMemory I = new JVMMemory();
+    public static final JVMMemory instance = new JVMMemory();
 
     private MemoryMXBean memoryMXBean;
 

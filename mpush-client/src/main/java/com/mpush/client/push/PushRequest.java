@@ -141,8 +141,8 @@ public final class PushRequest extends FutureTask<PushResult> {
 
     /**
      * run方法会有两个地方的线程调用
-     * 1. 任务超时时会调用，见PushRequestBus.I.put(sessionId, PushRequest.this);
-     * 2. 异步执行callback的时候，见PushRequestBus.I.asyncCall(this);
+     * 1. 任务超时时会调用，见PushRequestBus.instance.put(sessionId, PushRequest.this);
+     * 2. 异步执行callback的时候，见PushRequestBus.instance.asyncCall(this);
      */
     @Override
     public void run() {

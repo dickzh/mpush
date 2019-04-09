@@ -87,7 +87,7 @@ public final class ConnClientChannelHandler extends ChannelInboundHandlerAdapter
                 connection.getSessionContext().changeCipher(new AesCipher(clientConfig.getClientKey(), clientConfig.getIv()));
                 HandshakeOkMessage message = new HandshakeOkMessage(packet, connection);
                 message.decodeBody();
-                byte[] sessionKey = CipherBox.I.mixKey(clientConfig.getClientKey(), message.serverKey);
+                byte[] sessionKey = CipherBox.instance.mixKey(clientConfig.getClientKey(), message.serverKey);
                 connection.getSessionContext().changeCipher(new AesCipher(sessionKey, clientConfig.getIv()));
                 connection.getSessionContext().setHeartbeat(message.heartbeat);
                 startHeartBeat(message.heartbeat - 1000);

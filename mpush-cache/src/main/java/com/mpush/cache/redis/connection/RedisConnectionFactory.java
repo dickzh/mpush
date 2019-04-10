@@ -15,19 +15,26 @@
  */
 package com.mpush.cache.redis.connection;
 
-import com.mpush.cache.redis.RedisServer;
 import com.mpush.tools.config.data.RedisNode;
+import io.lettuce.core.AbstractRedisClient;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
+import io.lettuce.core.api.StatefulConnection;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.cluster.RedisClusterClient;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
+import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
+import io.lettuce.core.support.ConnectionPoolSupport;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.*;
-import redis.clients.util.Pool;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Connection factory creating <a href="http://github.com/xetorthio/jedis">Jedis</a> based connections.
@@ -42,19 +49,20 @@ public class RedisConnectionFactory {
     private final static Logger log = LoggerFactory.getLogger(RedisConnectionFactory.class);
 
     private String hostName = "localhost";
-    private int port = Protocol.DEFAULT_PORT;
-    private int timeout = Protocol.DEFAULT_TIMEOUT;
+    private int port = RedisURI.DEFAULT_REDIS_PORT;
+    private long timeout = RedisURI.DEFAULT_TIMEOUT;
     private String password;
 
     private String sentinelMaster;
     private List<RedisNode> redisServers;
     private boolean isCluster = false;
+    private boolean isSentinel = false;
     private int dbIndex = 0;
 
-    private JedisShardInfo shardInfo;
-    private Pool<Jedis> pool;
-    private JedisCluster cluster;
-    private JedisPoolConfig poolConfig = new JedisPoolConfig();
+    private AbstractRedisClient redisClient;
+    private GenericObjectPool<StatefulConnection<String, String>> pool;
+    private GenericObjectPool<StatefulConnection<String, String>> pubsubPool;
+    private GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
 
     /**
      * Constructs a new <code>JedisConnectionFactory</code> instance with default settings (default connection pooling, no
@@ -67,16 +75,39 @@ public class RedisConnectionFactory {
      * Returns a Jedis instance to be used as a Redis connection. The instance can be newly created or retrieved from a
      * pool.
      */
-    protected Jedis fetchJedisConnector() {
+    protected StatefulConnection<String, String> fetchRedisConnection() {
         try {
-
             if (pool != null) {
-                return pool.getResource();
+                return pool.borrowObject();
             }
-            Jedis jedis = new Jedis(getShardInfo());
-            // force initialization (see Jedis issue #82)
-            jedis.connect();
-            return jedis;
+
+            if (isCluster) {
+                createRedisClusterPool();
+            } else {
+                createPool();
+            }
+
+            return pool.borrowObject();
+
+        } catch (Exception ex) {
+            throw new RuntimeException("Cannot get Jedis connection", ex);
+        }
+    }
+
+    protected StatefulConnection<String, String> fetchRedisPubSubConnection() {
+        try {
+            if (pubsubPool != null) {
+                return pubsubPool.borrowObject();
+            }
+
+            if (isCluster) {
+                createRedisClusterPool();
+            } else {
+                createPool();
+            }
+
+            return pubsubPool.borrowObject();
+
         } catch (Exception ex) {
             throw new RuntimeException("Cannot get Jedis connection", ex);
         }
@@ -87,75 +118,151 @@ public class RedisConnectionFactory {
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void init() {
-        if (shardInfo == null) {
-            shardInfo = new JedisShardInfo(hostName, port);
-
-            if (StringUtils.isNotEmpty(password)) {
-                shardInfo.setPassword(password);
-            }
-
-            if (timeout > 0) {
-                shardInfo.setConnectionTimeout(timeout);
-            }
-        }
 
         if (isCluster) {
-            this.cluster = createCluster();
+            if (redisClient == null) {
+                List<RedisURI> nodeList = new ArrayList<>();
+                for (RedisNode node : redisServers) {
+                    RedisURI.Builder builder = RedisURI.builder().redis(node.getHost(), node.getPort());
+
+                    builder = builderOptions(builder);
+                    nodeList.add(builder.build());
+                }
+
+                redisClient = RedisClusterClient.create(nodeList);
+            }
+
+            this.pool = createRedisClusterPool();
+
         } else {
+            if (redisClient == null) {
+                RedisURI.Builder builder = RedisURI.builder().redis(hostName, port);
+
+                builder =  builderOptions(builder);
+                redisClient = RedisClient.create(builder.build());
+            }
+
             this.pool = createPool();
         }
     }
 
-    private Pool<Jedis> createPool() {
-        if (StringUtils.isNotBlank(sentinelMaster)) {
+    private RedisURI.Builder builderOptions(RedisURI.Builder builder){
+        if (StringUtils.isNotEmpty(password)) {
+            builder = builder.withPassword(password);
+        }
+
+        if (timeout > 0) {
+            builder = builder.withTimeout(Duration.ofSeconds(timeout));
+        }
+
+        if (dbIndex > 0) {
+            builder = builder.withDatabase(dbIndex);
+        }
+
+        return builder;
+    }
+
+    private GenericObjectPool<StatefulConnection<String, String>> createPool() {
+        if (isSentinel) {
             return createRedisSentinelPool();
         }
         return createRedisPool();
     }
 
     /**
-     * Creates {@link JedisSentinelPool}.
+     * Creates {@link GenericObjectPool}.
      *
      * @return
      * @since 1.4
      */
-    protected Pool<Jedis> createRedisSentinelPool() {
-        Set<String> hostAndPorts = redisServers
-                .stream()
-                .map(redisNode -> new HostAndPort(redisNode.host, redisNode.port).toString())
-                .collect(Collectors.toSet());
+    protected GenericObjectPool<StatefulConnection<String, String>> createRedisClusterPool() {
+        if(redisClient == null) {
+            List<RedisURI> nodeList = new ArrayList<>();
+            for (RedisNode node : redisServers) {
+                RedisURI.Builder builder = RedisURI.builder().redis(node.getHost(), node.getPort());
 
-        return new JedisSentinelPool(sentinelMaster, hostAndPorts, poolConfig, getShardInfo().getSoTimeout(), getShardInfo().getPassword());
-    }
+                builder =  builderOptions(builder);
+                nodeList.add(builder.build());
+            }
 
-
-    /**
-     * Creates {@link JedisPool}.
-     *
-     * @return
-     * @since 1.4
-     */
-    protected Pool<Jedis> createRedisPool() {
-        return new JedisPool(getPoolConfig(), shardInfo.getHost(), shardInfo.getPort(), shardInfo.getSoTimeout(), shardInfo.getPassword());
-    }
-
-    /**
-     * @return
-     * @since 1.7
-     */
-    protected JedisCluster createCluster() {
-
-        Set<HostAndPort> hostAndPorts = redisServers
-                .stream()
-                .map(redisNode -> new HostAndPort(redisNode.host, redisNode.port))
-                .collect(Collectors.toSet());
-
-
-        if (StringUtils.isNotEmpty(getPassword())) {
-            throw new IllegalArgumentException("Jedis does not support password protected Redis Cluster configurations!");
+            redisClient = RedisClusterClient.create(nodeList);
         }
-        int redirects = 5;
-        return new JedisCluster(hostAndPorts, timeout, redirects, poolConfig);
+
+        if(pool == null) {
+            pool = ConnectionPoolSupport
+                    .createGenericObjectPool(() -> ((RedisClusterClient) redisClient).connect(), poolConfig);
+            preparePool(pool);
+
+        }
+        if(pubsubPool == null) {
+            pubsubPool = ConnectionPoolSupport
+                    .createGenericObjectPool(() -> ((RedisClusterClient) redisClient).connectPubSub(), poolConfig);
+
+
+            preparePool(pubsubPool);
+        }
+        return pool;
+    }
+
+
+    /**
+     * Creates {@link GenericObjectPool}.
+     *
+     * @return
+     * @since 1.4
+     */
+    protected GenericObjectPool<StatefulConnection<String, String>> createRedisPool() {
+        if (redisClient == null) {
+            RedisURI.Builder builder = RedisURI.builder().redis(hostName, port);
+
+            builder =  builderOptions(builder);
+            redisClient = RedisClient.create(builder.build());
+        }
+
+        if(pool == null) {
+            pool = ConnectionPoolSupport
+                    .createGenericObjectPool(() -> ((RedisClient) redisClient).connect(), poolConfig);
+            preparePool(pool);
+        }
+
+        if(pubsubPool == null) {
+            pubsubPool = ConnectionPoolSupport
+                    .createGenericObjectPool(() -> ((RedisClient) redisClient).connectPubSub(), poolConfig);
+            preparePool(pubsubPool);
+        }
+        return pool;
+    }
+
+    protected GenericObjectPool<StatefulConnection<String, String>> createRedisSentinelPool() {
+        if (redisClient == null) {
+            RedisURI.Builder builder = RedisURI.Builder.sentinel(sentinelMaster, port);
+            for (RedisNode node : redisServers) {
+                builder = builder.withSentinel(node.getHost(), node.getPort());
+            }
+            builder =  builderOptions(builder);
+            redisClient = RedisClient.create(builder.build());
+        }
+
+        if(pool == null) {
+            pool = ConnectionPoolSupport
+                    .createGenericObjectPool(() -> ((RedisClient) redisClient).connect(), poolConfig);
+            preparePool(pool);
+        }
+
+        if(pubsubPool == null) {
+            pubsubPool = ConnectionPoolSupport
+                    .createGenericObjectPool(() -> ((RedisClient) redisClient).connectPubSub(), poolConfig);
+            preparePool(pubsubPool);
+        }
+        return pool;
+    }
+
+    private void preparePool(GenericObjectPool<StatefulConnection<String, String>> pool){
+        try {
+            pool.preparePool();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -165,40 +272,64 @@ public class RedisConnectionFactory {
     public void destroy() {
         if (pool != null) {
             try {
-                pool.destroy();
+                pool.close();
             } catch (Exception ex) {
                 log.warn("Cannot properly close Jedis pool", ex);
             }
             pool = null;
         }
-        if (cluster != null) {
+
+        if (pubsubPool != null) {
             try {
-                cluster.close();
+                pubsubPool.close();
             } catch (Exception ex) {
-                log.warn("Cannot properly close Jedis cluster", ex);
+                log.warn("Cannot properly close Jedis pool", ex);
             }
-            cluster = null;
+            pubsubPool = null;
         }
+
+        if (redisClient != null) {
+            try {
+                redisClient.shutdown();
+            } catch (Exception ex) {
+                log.warn("Cannot properly close Jedis clusterClient", ex);
+            }
+            redisClient = null;
+        }
+
     }
 
     /*
      * (non-Javadoc)
      * @see org.springframework.data.redis.connection.RedisConnectionFactory#getConnection()
      */
-    public Jedis getJedisConnection() {
-        Jedis jedis = fetchJedisConnector();
-        if (dbIndex > 0 && jedis != null) {
-            jedis.select(dbIndex);
-        }
-        return jedis;
+    public StatefulRedisConnection getRedisConnection() {
+        return (StatefulRedisConnection) fetchRedisConnection();
     }
 
     /*
      * (non-Javadoc)
      * @see org.springframework.data.redis.connection.RedisConnectionFactory#getClusterConnection()
      */
-    public JedisCluster getClusterConnection() {
-        return cluster;
+    public StatefulRedisClusterConnection getClusterConnection() {
+        return (StatefulRedisClusterConnection) fetchRedisConnection();
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.connection.RedisConnectionFactory#getConnection()
+     */
+    public StatefulRedisPubSubConnection getRedisPubSubConnection() {
+        return (StatefulRedisPubSubConnection) fetchRedisPubSubConnection();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.redis.connection.RedisConnectionFactory#getClusterConnection()
+     */
+    public StatefulRedisClusterPubSubConnection getClusterPubSubConnection() {
+        return (StatefulRedisClusterPubSubConnection) fetchRedisPubSubConnection();
     }
 
     public boolean isCluster() {
@@ -261,21 +392,40 @@ public class RedisConnectionFactory {
     }
 
     /**
-     * Returns the shardInfo.
+     * Returns the redisClient.
      *
-     * @return Returns the shardInfo
+     * @return Returns the redisClient
      */
-    public JedisShardInfo getShardInfo() {
-        return shardInfo;
+    public RedisClient getRedisClient() {
+        return (RedisClient)redisClient;
     }
 
     /**
      * Sets the shard info for this factory.
      *
-     * @param shardInfo The shardInfo to set.
+     * @param redisClient The redisClient to set.
      */
-    public void setShardInfo(JedisShardInfo shardInfo) {
-        this.shardInfo = shardInfo;
+    public void setRedisClient(RedisClient redisClient) {
+        this.redisClient = redisClient;
+    }
+
+
+    /**
+     * Returns the clusterClient.
+     *
+     * @return Returns the clusterClient
+     */
+    public RedisClusterClient getClusterClient() {
+        return (RedisClusterClient)redisClient;
+    }
+
+    /**
+     * Sets the shard info for this factory.
+     *
+     * @param clusterClient The clusterClient to set.
+     */
+    public void setClusterClient(RedisClusterClient clusterClient) {
+        this.redisClient = clusterClient;
     }
 
     /**
@@ -283,14 +433,14 @@ public class RedisConnectionFactory {
      *
      * @return Returns the timeout
      */
-    public int getTimeout() {
+    public long getTimeout() {
         return timeout;
     }
 
     /**
      * @param timeout The timeout to set.
      */
-    public void setTimeout(int timeout) {
+    public void setTimeout(long timeout) {
         this.timeout = timeout;
     }
 
@@ -299,7 +449,7 @@ public class RedisConnectionFactory {
      *
      * @return Returns the poolConfig
      */
-    public JedisPoolConfig getPoolConfig() {
+    public GenericObjectPoolConfig getPoolConfig() {
         return poolConfig;
     }
 
@@ -308,7 +458,7 @@ public class RedisConnectionFactory {
      *
      * @param poolConfig The poolConfig to set.
      */
-    public void setPoolConfig(JedisPoolConfig poolConfig) {
+    public void setPoolConfig(GenericObjectPoolConfig poolConfig) {
         this.poolConfig = poolConfig;
     }
 
@@ -332,6 +482,10 @@ public class RedisConnectionFactory {
 
     public void setCluster(boolean cluster) {
         isCluster = cluster;
+    }
+
+    public void setSentinel(boolean sentinel) {
+        isSentinel = sentinel;
     }
 
     public void setSentinelMaster(String sentinelMaster) {

@@ -19,11 +19,10 @@
 
 package com.mpush.cache.redis.mq;
 
-import com.mpush.tools.Jsons;
 import com.mpush.tools.log.Logs;
-import redis.clients.jedis.JedisPubSub;
+import io.lettuce.core.pubsub.RedisPubSubAdapter;
 
-public final class Subscriber extends JedisPubSub {
+public final class Subscriber extends RedisPubSubAdapter<String, String> {
     private final ListenerDispatcher listenerDispatcher;
 
     public Subscriber(ListenerDispatcher listenerDispatcher) {
@@ -31,53 +30,41 @@ public final class Subscriber extends JedisPubSub {
     }
 
     @Override
-    public void onMessage(String channel, String message) {
+    public void message(String channel, String message) {
         Logs.CACHE.info("onMessage:{},{}", channel, message);
         listenerDispatcher.onMessage(channel, message);
-        super.onMessage(channel, message);
+        super.message(channel, message);
     }
 
     @Override
-    public void onPMessage(String pattern, String channel, String message) {
+    public void message(String pattern, String channel, String message) {
         Logs.CACHE.info("onPMessage:{},{},{}", pattern, channel, message);
-        super.onPMessage(pattern, channel, message);
+        super.message(pattern, channel, message);
     }
 
     @Override
-    public void onPSubscribe(String pattern, int subscribedChannels) {
+    public void psubscribed(String pattern, long subscribedChannels) {
         Logs.CACHE.info("onPSubscribe:{},{}", pattern, subscribedChannels);
-        super.onPSubscribe(pattern, subscribedChannels);
+        super.psubscribed(pattern, subscribedChannels);
     }
 
     @Override
-    public void onPUnsubscribe(String pattern, int subscribedChannels) {
+    public void punsubscribed(String pattern, long subscribedChannels) {
         Logs.CACHE.info("onPUnsubscribe:{},{}", pattern, subscribedChannels);
-        super.onPUnsubscribe(pattern, subscribedChannels);
+        super.punsubscribed(pattern, subscribedChannels);
     }
 
     @Override
-    public void onSubscribe(String channel, int subscribedChannels) {
+    public void subscribed(String channel, long subscribedChannels) {
         Logs.CACHE.info("onSubscribe:{},{}", channel, subscribedChannels);
-        super.onSubscribe(channel, subscribedChannels);
+        super.subscribed(channel, subscribedChannels);
     }
 
     @Override
-    public void onUnsubscribe(String channel, int subscribedChannels) {
+    public void unsubscribed(String channel, long subscribedChannels) {
         Logs.CACHE.info("onUnsubscribe:{},{}", channel, subscribedChannels);
-        super.onUnsubscribe(channel, subscribedChannels);
+        super.unsubscribed(channel, subscribedChannels);
     }
 
-
-    @Override
-    public void unsubscribe() {
-        Logs.CACHE.info("unsubscribe");
-        super.unsubscribe();
-    }
-
-    @Override
-    public void unsubscribe(String... channels) {
-        Logs.CACHE.info("unsubscribe:{}", Jsons.toJson(channels));
-        super.unsubscribe(channels);
-    }
 
 }

@@ -26,7 +26,15 @@ import com.mpush.tools.Jsons;
 import com.mpush.tools.Utils;
 import com.mpush.tools.config.IConfig;
 import com.mpush.tools.log.Logs;
-import redis.clients.jedis.*;
+import io.lettuce.core.ScanArgs;
+import io.lettuce.core.ScanCursor;
+import io.lettuce.core.api.StatefulConnection;
+import io.lettuce.core.api.sync.RedisCommands;
+import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
+import io.lettuce.core.cluster.pubsub.api.sync.RedisClusterPubSubCommands;
+import io.lettuce.core.pubsub.RedisPubSubListener;
+import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -44,10 +52,11 @@ public final class RedisManager implements CacheManager {
     public void init() {
         Logs.CACHE.info("begin init redis...");
         factory.setPassword(IConfig.mp.redis.password);
-        factory.setPoolConfig(IConfig.mp.redis.getPoolConfig(JedisPoolConfig.class));
+        factory.setPoolConfig(IConfig.mp.redis.getPoolConfig(GenericObjectPoolConfig.class));
         factory.setRedisServers(IConfig.mp.redis.nodes);
         factory.setCluster(IConfig.mp.redis.isCluster());
         if (IConfig.mp.redis.isSentinel()) {
+            factory.setSentinel(true);
             factory.setSentinelMaster(IConfig.mp.redis.sentinelMaster);
         }
         factory.init();
@@ -55,48 +64,92 @@ public final class RedisManager implements CacheManager {
         Logs.CACHE.info("init redis success...");
     }
 
-    private <R> R call(Function<JedisCommands, R> function, R d) {
-        if (factory.isCluster()) {
-            try {
-                return function.apply(factory.getClusterConnection());
+    private <R> R call(Function<RedisCommands<String, String>, R> function, R d) {
+            try{
+                return function.apply((RedisCommands<String, String>)factory.getRedisConnection().sync());
             } catch (Exception e) {
                 Logs.CACHE.error("redis ex", e);
                 throw new RuntimeException(e);
             }
-        } else {
-            try (Jedis jedis = factory.getJedisConnection()) {
-                return function.apply(jedis);
-            } catch (Exception e) {
-                Logs.CACHE.error("redis ex", e);
-                throw new RuntimeException(e);
-            }
+    }
+
+    private void call(Consumer<RedisCommands<String, String>> consumer) {
+        try {
+            consumer.accept(factory.getRedisConnection().sync());
+        } catch (Exception e) {
+            Logs.CACHE.error("redis ex", e);
+            throw new RuntimeException(e);
         }
     }
 
-    private void call(Consumer<JedisCommands> consumer) {
-        if (factory.isCluster()) {
-            try {
-                consumer.accept(factory.getClusterConnection());
-            } catch (Exception e) {
-                Logs.CACHE.error("redis ex", e);
-                throw new RuntimeException(e);
-            }
-        } else {
-            try (Jedis jedis = factory.getJedisConnection()) {
-                consumer.accept(jedis);
-            } catch (Exception e) {
-                Logs.CACHE.error("redis ex", e);
-                throw new RuntimeException(e);
-            }
+    private <R> R callCluster(Function<RedisClusterCommands<String, String>, R> function, R d) {
+        try {
+            return function.apply((RedisClusterCommands<String, String>)factory.getClusterConnection().sync());
+        } catch (Exception e) {
+            Logs.CACHE.error("redis ex", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void callCluster(Consumer<RedisClusterCommands<String, String>> consumer) {
+        try {
+            consumer.accept(factory.getClusterConnection().sync());
+        } catch (Exception e) {
+            Logs.CACHE.error("redis ex", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <R> R callPubSub(Function<RedisPubSubCommands<String, String>, R> function, R d) {
+        try{
+            return function.apply((RedisPubSubCommands<String, String>)factory.getRedisPubSubConnection().sync());
+        } catch (Exception e) {
+            Logs.CACHE.error("redis ex", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void callPubSub(Consumer<RedisPubSubCommands<String, String>> consumer) {
+        try {
+            consumer.accept(factory.getRedisPubSubConnection().sync());
+        } catch (Exception e) {
+            Logs.CACHE.error("redis ex", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <R> R callClusterPubSub(Function<RedisClusterPubSubCommands<String, String>, R> function, R d) {
+        try {
+            return function.apply((RedisClusterPubSubCommands<String, String>)factory.getClusterPubSubConnection().sync());
+        } catch (Exception e) {
+            Logs.CACHE.error("redis ex", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void callClusterPubSub(Consumer<RedisClusterPubSubCommands<String, String>> consumer) {
+        try {
+            consumer.accept(factory.getClusterPubSubConnection().sync());
+        } catch (Exception e) {
+            Logs.CACHE.error("redis ex", e);
+            throw new RuntimeException(e);
         }
     }
 
     public long incr(String key) {
-        return call(jedis -> jedis.incr(key), 0L);
+        if (factory.isCluster()) {
+            return callCluster(command -> command.incr(key), 0L);
+        } else {
+            return call(command -> command.incr(key), 0L);
+        }
     }
 
     public long incrBy(String key, long delt) {
-        return call(jedis -> jedis.incrBy(key, delt), 0L);
+        if (factory.isCluster()) {
+            return callCluster(command -> command.incrby(key, delt), 0L);
+        } else {
+            return call(command -> command.incrby(key, delt), 0L);
+        }
     }
 
     /********************* k v redis start ********************************/
@@ -107,7 +160,13 @@ public final class RedisManager implements CacheManager {
      */
     @SuppressWarnings("unchecked")
     public <T> T get(String key, Class<T> clazz) {
-        String value = call(jedis -> jedis.get(key), null);
+        String value;
+        if (factory.isCluster()) {
+            value = callCluster(command -> command.get(key), null);
+        } else {
+            value = call(command -> command.get(key), null);
+        }
+
         if (value == null) return null;
         if (clazz == String.class) return (T) value;
         return Jsons.fromJson(value, clazz);
@@ -131,16 +190,30 @@ public final class RedisManager implements CacheManager {
      * @param time  seconds
      */
     public void set(String key, String value, int time) {
-        call(jedis -> {
-            jedis.set(key, value);
-            if (time > 0) {
-                jedis.expire(key, time);
-            }
-        });
+
+        if (factory.isCluster()) {
+            callCluster(command -> {
+                command.set(key, value);
+                if (time > 0) {
+                    command.expire(key, time);
+                }
+            });
+        } else {
+            call(command -> {
+                command.set(key, value);
+                if (time > 0) {
+                    command.expire(key, time);
+                }
+            });
+        }
     }
 
     public void del(String key) {
-        call(jedis -> jedis.del(key));
+        if (factory.isCluster()) {
+            callCluster(command -> command.del(key));
+        } else {
+            call(command -> command.del(key));
+        }
     }
 
     /********************* k v redis end ********************************/
@@ -149,7 +222,11 @@ public final class RedisManager implements CacheManager {
      * hash redis start
      ********************************/
     public void hset(String key, String field, String value) {
-        call(jedis -> jedis.hset(key, field, value));
+        if (factory.isCluster()) {
+            callCluster(command -> command.hset(key, field, value));
+        } else {
+            call(command -> command.hset(key, field, value));
+        }
     }
 
     public void hset(String key, String field, Object value) {
@@ -158,18 +235,32 @@ public final class RedisManager implements CacheManager {
 
     @SuppressWarnings("unchecked")
     public <T> T hget(String key, String field, Class<T> clazz) {
-        String value = call(jedis -> jedis.hget(key, field), null);
+        String value;
+        if (factory.isCluster()) {
+            value = callCluster(command -> command.hget(key, field), null);
+        } else {
+            value = call(command -> command.hget(key, field), null);
+        }
+
         if (value == null) return null;
         if (clazz == String.class) return (T) value;
         return Jsons.fromJson(value, clazz);
     }
 
     public void hdel(String key, String field) {
-        call(jedis -> jedis.hdel(key, field));
+        if (factory.isCluster()) {
+            callCluster(command -> command.hdel(key, field));
+        } else {
+            call(command -> command.hdel(key, field));
+        }
     }
 
     public Map<String, String> hgetAll(String key) {
-        return call(jedis -> jedis.hgetAll(key), Collections.<String, String>emptyMap());
+        if (factory.isCluster()) {
+            return callCluster(command -> command.hgetall(key), Collections.<String, String>emptyMap());
+        } else {
+            return call(command -> command.hgetall(key), Collections.<String, String>emptyMap());
+        }
     }
 
     public <T> Map<String, T> hgetAll(String key, Class<T> clazz) {
@@ -186,8 +277,12 @@ public final class RedisManager implements CacheManager {
      * @param key
      * @return
      */
-    public Set<String> hkeys(String key) {
-        return call(jedis -> jedis.hkeys(key), Collections.<String>emptySet());
+    public List<String> hkeys(String key) {
+        if (factory.isCluster()) {
+            return callCluster(command -> command.hkeys(key), Collections.<String>emptyList());
+        } else {
+            return call(command -> command.hkeys(key), Collections.<String>emptyList());
+        }
     }
 
     /**
@@ -198,11 +293,18 @@ public final class RedisManager implements CacheManager {
      * @return
      */
     public <T> List<T> hmget(String key, Class<T> clazz, String... fields) {
-        return call(jedis -> jedis.hmget(key, fields), Collections.<String>emptyList())
-                .stream()
-                .map(s -> Jsons.fromJson(s, clazz))
-                .collect(Collectors.toList());
 
+        if (factory.isCluster()) {
+            return callCluster(command -> command.hmget(key, fields), Collections.<String>emptyList())
+                    .stream()
+                    .map(s -> Jsons.fromJson((String)s, clazz))
+                    .collect(Collectors.toList());
+        } else {
+            return call(command -> command.hmget(key, fields), Collections.<String>emptyList())
+                    .stream()
+                    .map(s -> Jsons.fromJson((String)s, clazz))
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -213,12 +315,21 @@ public final class RedisManager implements CacheManager {
      * @param time
      */
     public void hmset(String key, Map<String, String> hash, int time) {
-        call(jedis -> {
-            jedis.hmset(key, hash);
-            if (time > 0) {
-                jedis.expire(key, time);
-            }
-        });
+        if (factory.isCluster()) {
+            callCluster(command -> {
+                command.hmset(key, hash);
+                if (time > 0) {
+                    command.expire(key, time);
+                }
+            });
+        } else {
+            call(command -> {
+                command.hmset(key, hash);
+                if (time > 0) {
+                    command.expire(key, time);
+                }
+            });
+        }
     }
 
     public void hmset(String key, Map<String, String> hash) {
@@ -226,7 +337,11 @@ public final class RedisManager implements CacheManager {
     }
 
     public long hincrBy(String key, String field, long value) {
-        return call(jedis -> jedis.hincrBy(key, field, value), 0L);
+        if (factory.isCluster()) {
+            return callCluster(command -> command.hincrby(key, field, value), 0L);
+        } else {
+            return call(command -> command.hincrby(key, field, value), 0L);
+        }
     }
 
     /********************* hash redis end ********************************/
@@ -236,7 +351,11 @@ public final class RedisManager implements CacheManager {
      * 从队列的左边入队
      */
     public void lpush(String key, String... value) {
-        call(jedis -> jedis.lpush(key, value));
+        if (factory.isCluster()) {
+            callCluster(command -> command.lpush(key, value));
+        } else {
+            call(command -> command.lpush(key, value));
+        }
     }
 
     public void lpush(String key, Object value) {
@@ -247,7 +366,11 @@ public final class RedisManager implements CacheManager {
      * 从队列的右边入队
      */
     public void rpush(String key, String value) {
-        call(jedis -> jedis.lpush(key, value));
+        if (factory.isCluster()) {
+            callCluster(command -> command.lpush(key, value));
+        } else {
+            call(command -> command.lpush(key, value));
+        }
     }
 
     public void rpush(String key, Object value) {
@@ -259,7 +382,13 @@ public final class RedisManager implements CacheManager {
      */
     @SuppressWarnings("unchecked")
     public <T> T lpop(String key, Class<T> clazz) {
-        String value = call(jedis -> jedis.lpop(key), null);
+        String value;
+
+        if (factory.isCluster()) {
+            value = callCluster(command -> command.lpop(key), null);
+        } else {
+            value = call(command -> command.lpop(key), null);
+        }
         if (value == null) return null;
         if (clazz == String.class) return (T) value;
         return Jsons.fromJson(value, clazz);
@@ -270,7 +399,12 @@ public final class RedisManager implements CacheManager {
      */
     @SuppressWarnings("unchecked")
     public <T> T rpop(String key, Class<T> clazz) {
-        String value = call(jedis -> jedis.rpop(key), null);
+        String value;
+        if (factory.isCluster()) {
+            value = callCluster(command -> command.rpop(key), null);
+        } else {
+            value = call(command -> command.rpop(key), null);
+        }
         if (value == null) return null;
         if (clazz == String.class) return (T) value;
         return Jsons.fromJson(value, clazz);
@@ -282,10 +416,17 @@ public final class RedisManager implements CacheManager {
      * 偏移量也可以是负数，表示偏移量是从list尾部开始计数。 例如， -1 表示列表的最后一个元素，-2 是倒数第二个，以此类推。
      */
     public <T> List<T> lrange(String key, int start, int end, Class<T> clazz) {
-        return call(jedis -> jedis.lrange(key, start, end), Collections.<String>emptyList())
-                .stream()
-                .map(s -> Jsons.fromJson(s, clazz))
-                .collect(Collectors.toList());
+        if (factory.isCluster()) {
+            return callCluster(command -> command.lrange(key, start, end), Collections.<String>emptyList())
+                    .stream()
+                    .map(s -> Jsons.fromJson(s, clazz))
+                    .collect(Collectors.toList());
+        } else {
+            return call(command -> command.lrange(key, start, end), Collections.<String>emptyList())
+                    .stream()
+                    .map(s -> Jsons.fromJson(s, clazz))
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -293,7 +434,11 @@ public final class RedisManager implements CacheManager {
      * 里的值不是一个list的话，会返回error。
      */
     public long llen(String key) {
-        return call(jedis -> jedis.llen(key), 0L);
+        if (factory.isCluster()) {
+            return callCluster(command -> command.llen(key), 0L);
+        } else {
+            return call(command -> command.llen(key), 0L);
+        }
     }
 
     /**
@@ -303,7 +448,11 @@ public final class RedisManager implements CacheManager {
      * @param value
      */
     public void lRem(String key, String value) {
-        call(jedis -> jedis.lrem(key, 0, value));
+        if (factory.isCluster()) {
+            callCluster(command -> command.lrem(key, 0, value));
+        } else {
+            call(command -> command.lrem(key, 0, value));
+        }
     }
 
     /********************* list redis end ********************************/
@@ -315,25 +464,29 @@ public final class RedisManager implements CacheManager {
 
     public void publish(String channel, Object message) {
         String msg = message instanceof String ? (String) message : Jsons.toJson(message);
-        call(jedis -> {
-            if (jedis instanceof MultiKeyCommands) {
-                ((MultiKeyCommands) jedis).publish(channel, msg);
-            } else if (jedis instanceof MultiKeyJedisClusterCommands) {
-                ((MultiKeyJedisClusterCommands) jedis).publish(channel, msg);
-            }
-        });
+        if (factory.isCluster()) {
+            callClusterPubSub(command ->  command.publish(channel, msg));
+        } else {
+            callPubSub(command ->  command.publish(channel, msg));
+        }
     }
 
-    public void subscribe(final JedisPubSub pubsub, final String channel) {
-        Utils.newThread(channel,
-                () -> call(jedis -> {
-                    if (jedis instanceof MultiKeyCommands) {
-                        ((MultiKeyCommands) jedis).subscribe(pubsub, channel);
-                    } else if (jedis instanceof MultiKeyJedisClusterCommands) {
-                        ((MultiKeyJedisClusterCommands) jedis).subscribe(pubsub, channel);
-                    }
-                })
-        ).start();
+    public void subscribe(final RedisPubSubListener pubsub, final String channel) {
+        if (factory.isCluster()) {
+            Utils.newThread(channel,
+                    () -> callClusterPubSub(command -> {
+                        command.getStatefulConnection().addListener(pubsub);
+                        command.subscribe(channel);
+                    })
+            ).start();
+        } else {
+            Utils.newThread(channel,
+                    () -> callPubSub(command -> {
+                        command.getStatefulConnection().addListener(pubsub);
+                        command.subscribe(channel);
+                    })
+            ).start();
+        }
     }
 
     /*********************
@@ -344,7 +497,11 @@ public final class RedisManager implements CacheManager {
      * @param value
      */
     public void sAdd(String key, String value) {
-        call(jedis -> jedis.sadd(key, value));
+        if (factory.isCluster()) {
+            callCluster(command -> command.sadd(key, value));
+        } else {
+            call(command -> command.sadd(key, value));
+        }
     }
 
     /**
@@ -352,11 +509,19 @@ public final class RedisManager implements CacheManager {
      * @return
      */
     public long sCard(String key) {
-        return call(jedis -> jedis.scard(key), 0L);
+        if (factory.isCluster()) {
+            return callCluster(command -> command.scard(key), 0L);
+        } else {
+            return call(command -> command.scard(key), 0L);
+        }
     }
 
     public void sRem(String key, String value) {
-        call(jedis -> jedis.srem(key, value));
+        if (factory.isCluster()) {
+            callCluster(command -> command.srem(key, value));
+        } else {
+            call(command -> command.srem(key, value));
+        }
     }
 
     /**
@@ -367,7 +532,13 @@ public final class RedisManager implements CacheManager {
      * @return
      */
     public <T> List<T> sScan(String key, Class<T> clazz, int start) {
-        List<String> list = call(jedis -> jedis.sscan(key, Integer.toString(start), new ScanParams().count(10)).getResult(), null);
+        List<String> list;
+
+        if (factory.isCluster()) {
+            list = call(command -> command.sscan(key, new ScanCursor("" + start, false), new ScanArgs().limit(10)).getValues(), null);
+        } else {
+            list = call(command -> command.sscan(key, new ScanCursor("" + start, false), new ScanArgs().limit(10)).getValues(), null);
+        }
         return toList(list, clazz);
     }
 
@@ -379,7 +550,11 @@ public final class RedisManager implements CacheManager {
      * @param value
      */
     public void zAdd(String key, String value) {
-        call(jedis -> jedis.zadd(key, 0, value));
+        if (factory.isCluster()) {
+            callCluster(command -> command.zadd(key, 0, value));
+        } else {
+            call(command -> command.zadd(key, 0, value));
+        }
     }
 
     /**
@@ -387,11 +562,19 @@ public final class RedisManager implements CacheManager {
      * @return
      */
     public Long zCard(String key) {
-        return call(jedis -> jedis.zcard(key), 0L);
+        if (factory.isCluster()) {
+            return callCluster(command -> command.zcard(key), 0L);
+        } else {
+            return call(command -> command.zcard(key), 0L);
+        }
     }
 
     public void zRem(String key, String value) {
-        call(jedis -> jedis.zrem(key, value));
+        if (factory.isCluster()) {
+            callCluster(command -> command.zrem(key, value));
+        } else {
+            call(command -> command.zrem(key, value));
+        }
     }
 
     /**
@@ -400,7 +583,13 @@ public final class RedisManager implements CacheManager {
      * 偏移量也可以是负数，表示偏移量是从list尾部开始计数。 例如， -1 表示列表的最后一个元素，-2 是倒数第二个，以此类推。
      */
     public <T> List<T> zrange(String key, int start, int end, Class<T> clazz) {
-        Set<String> value = call(jedis -> jedis.zrange(key, start, end), null);
+        List<String> value;
+
+        if (factory.isCluster()) {
+            value = callCluster(command -> command.zrange(key, start, end), null);
+        } else {
+            value = call(command -> command.zrange(key, start, end), null);
+        }
         return toList(value, clazz);
     }
 
@@ -425,12 +614,14 @@ public final class RedisManager implements CacheManager {
 
     public void test() {
         if (factory.isCluster()) {
-            JedisCluster cluster = factory.getClusterConnection();
+            StatefulConnection cluster = factory.getClusterConnection();
             if (cluster == null) throw new RuntimeException("init redis cluster error.");
+            cluster.close();
         } else {
-            Jedis jedis = factory.getJedisConnection();
-            if (jedis == null) throw new RuntimeException("init redis error, can not get connection.");
-            jedis.close();
+            StatefulConnection command = factory.getRedisConnection();
+            if (command == null) throw new RuntimeException("init redis error, can not get connection.");
+            command.close();
         }
     }
+
 }

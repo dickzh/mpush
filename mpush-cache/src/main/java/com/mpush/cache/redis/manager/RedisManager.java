@@ -29,10 +29,14 @@ import com.mpush.tools.log.Logs;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanCursor;
 import io.lettuce.core.api.StatefulConnection;
+import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
+import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
+import io.lettuce.core.cluster.pubsub.StatefulRedisClusterPubSubConnection;
 import io.lettuce.core.cluster.pubsub.api.sync.RedisClusterPubSubCommands;
 import io.lettuce.core.pubsub.RedisPubSubListener;
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
@@ -65,74 +69,122 @@ public final class RedisManager implements CacheManager {
     }
 
     private <R> R call(Function<RedisCommands<String, String>, R> function, R d) {
-            try{
-                return function.apply((RedisCommands<String, String>)factory.getRedisConnection().sync());
-            } catch (Exception e) {
-                Logs.CACHE.error("redis ex", e);
-                throw new RuntimeException(e);
-            }
-    }
-
-    private void call(Consumer<RedisCommands<String, String>> consumer) {
-        try {
-            consumer.accept(factory.getRedisConnection().sync());
+        StatefulRedisConnection connection = null;
+        try{
+            connection = factory.getRedisConnection();
+            return function.apply((RedisCommands<String, String>)connection.sync());
         } catch (Exception e) {
             Logs.CACHE.error("redis ex", e);
             throw new RuntimeException(e);
+        } finally {
+            if(connection != null){
+                factory.getPool().returnObject(connection);
+            }
+        }
+    }
+
+    private void call(Consumer<RedisCommands<String, String>> consumer) {
+        StatefulRedisConnection connection = null;
+        try {
+            connection = factory.getRedisConnection();
+            consumer.accept(connection.sync());
+        } catch (Exception e) {
+            Logs.CACHE.error("redis ex", e);
+            throw new RuntimeException(e);
+        } finally {
+            if(connection != null){
+                factory.getPool().returnObject(connection);
+            }
         }
     }
 
     private <R> R callCluster(Function<RedisClusterCommands<String, String>, R> function, R d) {
+        StatefulRedisClusterConnection connection = null;
         try {
-            return function.apply((RedisClusterCommands<String, String>)factory.getClusterConnection().sync());
+            connection = factory.getClusterConnection();
+            return function.apply((RedisClusterCommands<String, String>)connection.sync());
         } catch (Exception e) {
             Logs.CACHE.error("redis ex", e);
             throw new RuntimeException(e);
+        } finally {
+            if(connection != null){
+                factory.getPool().returnObject(connection);
+            }
         }
     }
 
     private void callCluster(Consumer<RedisClusterCommands<String, String>> consumer) {
+        StatefulRedisClusterConnection connection = null;
         try {
-            consumer.accept(factory.getClusterConnection().sync());
+            connection = factory.getClusterConnection();
+            consumer.accept(connection.sync());
         } catch (Exception e) {
             Logs.CACHE.error("redis ex", e);
             throw new RuntimeException(e);
+        } finally {
+            if(connection != null){
+                factory.getPool().returnObject(connection);
+            }
         }
     }
 
     private <R> R callPubSub(Function<RedisPubSubCommands<String, String>, R> function, R d) {
+        StatefulRedisPubSubConnection connection = null;
         try{
-            return function.apply((RedisPubSubCommands<String, String>)factory.getRedisPubSubConnection().sync());
+            connection = factory.getRedisPubSubConnection();
+            return function.apply((RedisPubSubCommands<String, String>)connection.sync());
         } catch (Exception e) {
             Logs.CACHE.error("redis ex", e);
             throw new RuntimeException(e);
+        } finally {
+            if(connection != null){
+                factory.getPubsubPool().returnObject(connection);
+            }
         }
     }
 
     private void callPubSub(Consumer<RedisPubSubCommands<String, String>> consumer) {
+        StatefulRedisPubSubConnection connection = null;
         try {
-            consumer.accept(factory.getRedisPubSubConnection().sync());
+            connection = factory.getRedisPubSubConnection();
+            consumer.accept(connection.sync());
         } catch (Exception e) {
             Logs.CACHE.error("redis ex", e);
             throw new RuntimeException(e);
+        } finally {
+            if(connection != null){
+                factory.getPubsubPool().returnObject(connection);
+            }
         }
     }
 
     private <R> R callClusterPubSub(Function<RedisClusterPubSubCommands<String, String>, R> function, R d) {
+        StatefulRedisClusterPubSubConnection connection = null;
         try {
-            return function.apply((RedisClusterPubSubCommands<String, String>)factory.getClusterPubSubConnection().sync());
+            connection = factory.getClusterPubSubConnection();
+            return function.apply((RedisClusterPubSubCommands<String, String>)connection.sync());
         } catch (Exception e) {
             Logs.CACHE.error("redis ex", e);
             throw new RuntimeException(e);
+        } finally {
+            if(connection != null){
+                factory.getPubsubPool().returnObject(connection);
+            }
         }
     }
 
     private void callClusterPubSub(Consumer<RedisClusterPubSubCommands<String, String>> consumer) {
+        StatefulRedisClusterPubSubConnection connection = null;
         try {
-            consumer.accept(factory.getClusterPubSubConnection().sync());
+            connection = factory.getClusterPubSubConnection();
+            consumer.accept(connection.sync());
         } catch (Exception e) {
             Logs.CACHE.error("redis ex", e);
             throw new RuntimeException(e);
+        } finally {
+            if(connection != null){
+                factory.getPubsubPool().returnObject(connection);
+            }
         }
     }
 
@@ -465,9 +517,9 @@ public final class RedisManager implements CacheManager {
     public void publish(String channel, Object message) {
         String msg = message instanceof String ? (String) message : Jsons.toJson(message);
         if (factory.isCluster()) {
-            callClusterPubSub(command ->  command.publish(channel, msg));
+            callCluster(command ->  command.publish(channel, msg));
         } else {
-            callPubSub(command ->  command.publish(channel, msg));
+            call(command ->  command.publish(channel, msg));
         }
     }
 

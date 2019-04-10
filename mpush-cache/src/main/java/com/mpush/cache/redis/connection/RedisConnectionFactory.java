@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Connection factory creating <a href="http://github.com/xetorthio/jedis">Jedis</a> based connections.
+ * Connection factory creating <a href="http://github.com/xetorthio/redis">redis</a> based connections.
  *
  * @author Costin Leau
  * @author Thomas Darimont
@@ -65,14 +65,14 @@ public class RedisConnectionFactory {
     private GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
 
     /**
-     * Constructs a new <code>JedisConnectionFactory</code> instance with default settings (default connection pooling, no
+     * Constructs a new <code>redisConnectionFactory</code> instance with default settings (default connection pooling, no
      * shard information).
      */
     public RedisConnectionFactory() {
     }
 
     /**
-     * Returns a Jedis instance to be used as a Redis connection. The instance can be newly created or retrieved from a
+     * Returns a redis instance to be used as a Redis connection. The instance can be newly created or retrieved from a
      * pool.
      */
     protected StatefulConnection<String, String> fetchRedisConnection() {
@@ -90,7 +90,7 @@ public class RedisConnectionFactory {
             return pool.borrowObject();
 
         } catch (Exception ex) {
-            throw new RuntimeException("Cannot get Jedis connection", ex);
+            throw new RuntimeException("Cannot get redis connection", ex);
         }
     }
 
@@ -109,7 +109,7 @@ public class RedisConnectionFactory {
             return pubsubPool.borrowObject();
 
         } catch (Exception ex) {
-            throw new RuntimeException("Cannot get Jedis connection", ex);
+            throw new RuntimeException("Cannot get redis connection", ex);
         }
     }
 
@@ -274,7 +274,7 @@ public class RedisConnectionFactory {
             try {
                 pool.close();
             } catch (Exception ex) {
-                log.warn("Cannot properly close Jedis pool", ex);
+                log.warn("Cannot properly close redis pool", ex);
             }
             pool = null;
         }
@@ -283,7 +283,7 @@ public class RedisConnectionFactory {
             try {
                 pubsubPool.close();
             } catch (Exception ex) {
-                log.warn("Cannot properly close Jedis pool", ex);
+                log.warn("Cannot properly close redis pool", ex);
             }
             pubsubPool = null;
         }
@@ -292,7 +292,7 @@ public class RedisConnectionFactory {
             try {
                 redisClient.shutdown();
             } catch (Exception ex) {
-                log.warn("Cannot properly close Jedis clusterClient", ex);
+                log.warn("Cannot properly close redis clusterClient", ex);
             }
             redisClient = null;
         }
@@ -499,5 +499,13 @@ public class RedisConnectionFactory {
         this.redisServers = redisServers;
         this.hostName = redisServers.get(0).getHost();
         this.port = redisServers.get(0).getPort();
+    }
+
+    public GenericObjectPool<StatefulConnection<String, String>> getPool() {
+        return pool;
+    }
+
+    public GenericObjectPool<StatefulConnection<String, String>> getPubsubPool() {
+        return pubsubPool;
     }
 }

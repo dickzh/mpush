@@ -56,7 +56,7 @@ public final class GatewayPushMessage extends ByteBufMessage implements IPushMes
 
     public static GatewayPushMessage build(Connection connection) {
         Packet packet = PacketFactory.get(GATEWAY_PUSH);
-        packet.sessionId = genSessionId();
+        packet.sessionId = generateSessionId();
         return new GatewayPushMessage(packet, connection);
     }
 

@@ -48,7 +48,7 @@ public final class GatewayKickUserMessage extends ByteBufMessage implements Kick
 
     public static GatewayKickUserMessage build(Connection connection) {
         Packet packet = PacketFactory.get(GATEWAY_KICK);
-        packet.sessionId = genSessionId();
+        packet.sessionId = generateSessionId();
         return new GatewayKickUserMessage(packet, connection);
     }
 

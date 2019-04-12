@@ -26,7 +26,6 @@ import com.mpush.api.protocol.Packet;
 import io.netty.channel.ChannelFutureListener;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.mpush.api.protocol.Command.PUSH;
@@ -46,9 +45,9 @@ public final class PushMessage extends BaseMessage {
 
     public static PushMessage build(Connection connection) {
         if (connection.getSessionContext().isSecurity()) {
-            return new PushMessage(new Packet(PUSH, genSessionId()), connection);
+            return new PushMessage(new Packet(PUSH, generateSessionId()), connection);
         } else {
-            return new PushMessage(new JsonPacket(PUSH, genSessionId()), connection);
+            return new PushMessage(new JsonPacket(PUSH, generateSessionId()), connection);
         }
     }
 

@@ -37,7 +37,7 @@ public final class FastConnectMessage extends ByteBufMessage {
     public int maxHeartbeat;
 
     public FastConnectMessage(Connection connection) {
-        super(new Packet(FAST_CONNECT, genSessionId()), connection);
+        super(new Packet(FAST_CONNECT, generateSessionId()), connection);
     }
 
     public FastConnectMessage(Packet message, Connection connection) {

@@ -21,24 +21,27 @@ package com.mpush.common;
 
 public final class CacheKeys {
 
-    private static final String USER_PREFIX = "mp:ur:";//用户路由
+    private static final String USER_ROUTER_PREFIX = "mp:ur:";//用户路由
 
-    private static final String SESSION_PREFIX = "mp:rs:";//可复用session
+    private static final String REMOTE_SESSION_PREFIX = "mp:rs:";//可复用session
 
     private static final String FAST_CONNECTION_DEVICE_PREFIX = "mp:fcd:";
 
     private static final String ONLINE_USER_LIST_KEY_PREFIX = "mp:oul:";//在线用户列表
 
+    private static final String GROUP_USER_LIST_KEY_PREFIX = "mp:gul:";//群组用户列表
+
     public static final String SESSION_AES_KEY = "mp:sa";
     public static final String SESSION_AES_SEQ_KEY = "mp:sas";
+
     public static final String PUSH_TASK_PREFIX = "mp:pt";
 
     public static String getUserRouteKey(String userId) {
-        return USER_PREFIX + userId;
+        return USER_ROUTER_PREFIX + userId;
     }
 
     public static String getSessionKey(String sessionId) {
-        return SESSION_PREFIX + sessionId;
+        return REMOTE_SESSION_PREFIX + sessionId;
     }
 
     public static String getDeviceIdKey(String deviceId) {
@@ -47,6 +50,10 @@ public final class CacheKeys {
 
     public static String getOnlineUserListKey(String publicIP) {
         return ONLINE_USER_LIST_KEY_PREFIX + publicIP;
+    }
+
+    public static String getGroupUserListKey(String groupId) {
+        return GROUP_USER_LIST_KEY_PREFIX + groupId;
     }
 
     public static String getPushTaskKey(String taskId) {

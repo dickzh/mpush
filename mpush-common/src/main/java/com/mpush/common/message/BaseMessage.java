@@ -208,7 +208,7 @@ public abstract class BaseMessage implements Message {
         send(ChannelFutureListener.CLOSE);
     }
 
-    protected static int genSessionId() {
+    protected static int generateSessionId() {
         return ID_SEQ.incrementAndGet();
     }
 

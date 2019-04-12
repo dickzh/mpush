@@ -78,7 +78,7 @@ public final class RedisManager implements CacheManager {
             throw new RuntimeException(e);
         } finally {
             if(connection != null){
-                factory.getPool().returnObject(connection);
+                factory.getNormalPool().returnObject(connection);
             }
         }
     }
@@ -93,7 +93,7 @@ public final class RedisManager implements CacheManager {
             throw new RuntimeException(e);
         } finally {
             if(connection != null){
-                factory.getPool().returnObject(connection);
+                factory.getNormalPool().returnObject(connection);
             }
         }
     }
@@ -108,7 +108,7 @@ public final class RedisManager implements CacheManager {
             throw new RuntimeException(e);
         } finally {
             if(connection != null){
-                factory.getPool().returnObject(connection);
+                factory.getNormalPool().returnObject(connection);
             }
         }
     }
@@ -123,7 +123,7 @@ public final class RedisManager implements CacheManager {
             throw new RuntimeException(e);
         } finally {
             if(connection != null){
-                factory.getPool().returnObject(connection);
+                factory.getNormalPool().returnObject(connection);
             }
         }
     }

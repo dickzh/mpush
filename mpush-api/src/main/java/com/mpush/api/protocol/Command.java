@@ -49,10 +49,8 @@ public enum Command {
     GATEWAY_GROUP(22),
     ACK(23),
     NACK(24),
-    GROUP_JOIN(25),
-    GROUP_LEFT(26),
-    GROUP_DESTORY(27),
-    GROUP_KICK(28),
+    GROUP_KICK(25),
+    GATEWAY_GROUP_KICK(26),
     UNKNOWN(-1);
 
     Command(int cmd) {

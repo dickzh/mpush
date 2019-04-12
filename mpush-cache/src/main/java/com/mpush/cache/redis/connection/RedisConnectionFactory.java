@@ -60,7 +60,7 @@ public class RedisConnectionFactory {
     private int dbIndex = 0;
 
     private AbstractRedisClient redisClient;
-    private GenericObjectPool<StatefulConnection<String, String>> pool;
+    private GenericObjectPool<StatefulConnection<String, String>> normalPool;
     private GenericObjectPool<StatefulConnection<String, String>> pubsubPool;
     private GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
 
@@ -73,12 +73,12 @@ public class RedisConnectionFactory {
 
     /**
      * Returns a redis instance to be used as a Redis connection. The instance can be newly created or retrieved from a
-     * pool.
+     * normalPool.
      */
     protected StatefulConnection<String, String> fetchRedisConnection() {
         try {
-            if (pool != null) {
-                return pool.borrowObject();
+            if (normalPool != null) {
+                return normalPool.borrowObject();
             }
 
             if (isCluster) {
@@ -87,7 +87,7 @@ public class RedisConnectionFactory {
                 createPool();
             }
 
-            return pool.borrowObject();
+            return normalPool.borrowObject();
 
         } catch (Exception ex) {
             throw new RuntimeException("Cannot get redis connection", ex);
@@ -132,7 +132,7 @@ public class RedisConnectionFactory {
                 redisClient = RedisClusterClient.create(nodeList);
             }
 
-            this.pool = createRedisClusterPool();
+            this.normalPool = createRedisClusterPool();
 
         } else {
             if (redisClient == null) {
@@ -142,7 +142,7 @@ public class RedisConnectionFactory {
                 redisClient = RedisClient.create(builder.build());
             }
 
-            this.pool = createPool();
+            this.normalPool = createPool();
         }
     }
 
@@ -188,10 +188,10 @@ public class RedisConnectionFactory {
             redisClient = RedisClusterClient.create(nodeList);
         }
 
-        if(pool == null) {
-            pool = ConnectionPoolSupport
+        if(normalPool == null) {
+            normalPool = ConnectionPoolSupport
                     .createGenericObjectPool(() -> ((RedisClusterClient) redisClient).connect(), poolConfig);
-            preparePool(pool);
+            preparePool(normalPool);
 
         }
         if(pubsubPool == null) {
@@ -201,7 +201,7 @@ public class RedisConnectionFactory {
 
             preparePool(pubsubPool);
         }
-        return pool;
+        return normalPool;
     }
 
 
@@ -219,10 +219,10 @@ public class RedisConnectionFactory {
             redisClient = RedisClient.create(builder.build());
         }
 
-        if(pool == null) {
-            pool = ConnectionPoolSupport
+        if(normalPool == null) {
+            normalPool = ConnectionPoolSupport
                     .createGenericObjectPool(() -> ((RedisClient) redisClient).connect(), poolConfig);
-            preparePool(pool);
+            preparePool(normalPool);
         }
 
         if(pubsubPool == null) {
@@ -230,7 +230,7 @@ public class RedisConnectionFactory {
                     .createGenericObjectPool(() -> ((RedisClient) redisClient).connectPubSub(), poolConfig);
             preparePool(pubsubPool);
         }
-        return pool;
+        return normalPool;
     }
 
     protected GenericObjectPool<StatefulConnection<String, String>> createRedisSentinelPool() {
@@ -243,10 +243,10 @@ public class RedisConnectionFactory {
             redisClient = RedisClient.create(builder.build());
         }
 
-        if(pool == null) {
-            pool = ConnectionPoolSupport
+        if(normalPool == null) {
+            normalPool = ConnectionPoolSupport
                     .createGenericObjectPool(() -> ((RedisClient) redisClient).connect(), poolConfig);
-            preparePool(pool);
+            preparePool(normalPool);
         }
 
         if(pubsubPool == null) {
@@ -254,7 +254,7 @@ public class RedisConnectionFactory {
                     .createGenericObjectPool(() -> ((RedisClient) redisClient).connectPubSub(), poolConfig);
             preparePool(pubsubPool);
         }
-        return pool;
+        return normalPool;
     }
 
     private void preparePool(GenericObjectPool<StatefulConnection<String, String>> pool){
@@ -270,20 +270,20 @@ public class RedisConnectionFactory {
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
     public void destroy() {
-        if (pool != null) {
+        if (normalPool != null) {
             try {
-                pool.close();
+                normalPool.close();
             } catch (Exception ex) {
-                log.warn("Cannot properly close redis pool", ex);
+                log.warn("Cannot properly close redis normalPool", ex);
             }
-            pool = null;
+            normalPool = null;
         }
 
         if (pubsubPool != null) {
             try {
                 pubsubPool.close();
             } catch (Exception ex) {
-                log.warn("Cannot properly close redis pool", ex);
+                log.warn("Cannot properly close redis normalPool", ex);
             }
             pubsubPool = null;
         }
@@ -454,7 +454,7 @@ public class RedisConnectionFactory {
     }
 
     /**
-     * Sets the pool configuration for this factory.
+     * Sets the normalPool configuration for this factory.
      *
      * @param poolConfig The poolConfig to set.
      */
@@ -501,8 +501,8 @@ public class RedisConnectionFactory {
         this.port = redisServers.get(0).getPort();
     }
 
-    public GenericObjectPool<StatefulConnection<String, String>> getPool() {
-        return pool;
+    public GenericObjectPool<StatefulConnection<String, String>> getNormalPool() {
+        return normalPool;
     }
 
     public GenericObjectPool<StatefulConnection<String, String>> getPubsubPool() {

@@ -47,7 +47,7 @@ public final class HandshakeMessage extends ByteBufMessage {
     public long timestamp;
 
     public HandshakeMessage(Connection connection) {
-        super(new Packet(HANDSHAKE, genSessionId()), connection);
+        super(new Packet(HANDSHAKE, generateSessionId()), connection);
     }
 
     public HandshakeMessage(Packet message, Connection connection) {

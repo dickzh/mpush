@@ -39,7 +39,7 @@ public final class HttpRequestMessage extends ByteBufMessage {
     public byte[] body;
 
     public HttpRequestMessage(Connection connection) {
-        super(new Packet(Command.HTTP_PROXY, genSessionId()), connection);
+        super(new Packet(Command.HTTP_PROXY, generateSessionId()), connection);
     }
 
     public HttpRequestMessage(Packet message, Connection connection) {

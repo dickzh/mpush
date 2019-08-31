@@ -21,7 +21,6 @@ package com.mpush.monitor.jmx.mxbean;
 
 import com.mpush.monitor.jmx.MBeanInfo;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**

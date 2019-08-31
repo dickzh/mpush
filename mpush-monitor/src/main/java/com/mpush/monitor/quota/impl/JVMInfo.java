@@ -21,7 +21,6 @@ package com.mpush.monitor.quota.impl;
 
 import com.google.common.collect.Maps;
 import com.mpush.monitor.quota.InfoQuota;
-import com.mpush.monitor.quota.MonitorQuota;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;

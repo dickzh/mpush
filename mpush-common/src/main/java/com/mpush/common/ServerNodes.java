@@ -22,8 +22,9 @@ package com.mpush.common;
 import com.mpush.api.srd.CommonServiceNode;
 import com.mpush.api.srd.ServiceNames;
 import com.mpush.api.srd.ServiceNode;
-import com.mpush.tools.config.IConfig;
 import com.mpush.tools.config.ConfigTools;
+
+import static com.mpush.tools.config.IConfig.mp.net.*;
 
 /**
  * Created by ohun on 2016/12/27.
@@ -35,17 +36,17 @@ public class ServerNodes {
     public static ServiceNode cs() {
         CommonServiceNode node = new CommonServiceNode();
         node.setHost(ConfigTools.getConnectServerRegisterIp());
-        node.setPort(IConfig.mp.net.connect_server_port);
+        node.setPort(connect_server_port);
         node.setPersistent(false);
         node.setServiceName(ServiceNames.CONN_SERVER);
-        node.setAttrs(IConfig.mp.net.connect_server_register_attr);
+        node.setAttrs(connect_server_register_attr);
         return node;
     }
 
     public static ServiceNode ws() {
         CommonServiceNode node = new CommonServiceNode();
         node.setHost(ConfigTools.getConnectServerRegisterIp());
-        node.setPort(IConfig.mp.net.ws_server_port);
+        node.setPort(ws_server_port);
         node.setPersistent(false);
         node.setServiceName(ServiceNames.WS_SERVER);
         //node.addAttr(ATTR_PUBLIC_IP, ConfigTools.getPublicIp());
@@ -55,7 +56,7 @@ public class ServerNodes {
     public static ServiceNode gs() {
         CommonServiceNode node = new CommonServiceNode();
         node.setHost(ConfigTools.getGatewayServerRegisterIp());
-        node.setPort(IConfig.mp.net.gateway_server_port);
+        node.setPort(gateway_server_port);
         node.setPersistent(false);
         node.setServiceName(ServiceNames.GATEWAY_SERVER);
         return node;

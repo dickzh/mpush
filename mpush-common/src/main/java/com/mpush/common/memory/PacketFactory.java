@@ -22,7 +22,8 @@ package com.mpush.common.memory;
 import com.mpush.api.protocol.Command;
 import com.mpush.api.protocol.Packet;
 import com.mpush.api.protocol.UDPPacket;
-import com.mpush.tools.config.IConfig;
+
+import static com.mpush.tools.config.IConfig.mp.net.udpGateway;
 
 /**
  * Created by ohun on 16/10/22.
@@ -30,7 +31,7 @@ import com.mpush.tools.config.IConfig;
  * @author ohun@live.cn (夜色)
  */
 public interface PacketFactory {
-    PacketFactory FACTORY = IConfig.mp.net.udpGateway() ? UDPPacket::new : Packet::new;
+    PacketFactory FACTORY = udpGateway() ? UDPPacket::new : Packet::new;
 
     static Packet get(Command command) {
         return FACTORY.create(command);

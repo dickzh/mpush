@@ -103,7 +103,9 @@ public class GatewayUDPConnectionFactory extends GatewayConnectionFactory {
     @Override
     public <M extends BaseMessage> boolean send(String hostAndPort, Function<Connection, M> creator, Consumer<M> sender) {
         InetSocketAddress recipient = ip_address.get(hostAndPort);
-        if (recipient == null) return false;// gateway server 找不到，直接返回推送失败
+        if (recipient == null) {
+            return false;// gateway server 找不到，直接返回推送失败
+        }
 
         M message = creator.apply(gatewayUDPConnector.getConnection());
         message.setRecipient(recipient);

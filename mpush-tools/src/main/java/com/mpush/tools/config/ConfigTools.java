@@ -20,7 +20,9 @@
 package com.mpush.tools.config;
 
 import com.mpush.tools.Utils;
-import com.mpush.tools.config.IConfig.mp.net.public_ip_mapping;
+import com.mpush.tools.config.IConfig.mp.net.*;
+
+import static com.mpush.tools.config.IConfig.mp.net.*;
 
 /**
  * Created by yxx on 2016/5/18.
@@ -45,8 +47,8 @@ public final class ConfigTools {
      * @return 内网IP地址
      */
     public static String getLocalIp() {
-        if (IConfig.mp.net.local_ip.length() > 0) {
-            return IConfig.mp.net.local_ip;
+        if (local_ip.length() > 0) {
+            return local_ip;
         }
         return Utils.lookupLocalIp();
     }
@@ -58,8 +60,8 @@ public final class ConfigTools {
      */
     public static String getPublicIp() {
 
-        if (IConfig.mp.net.public_ip.length() > 0) {
-            return IConfig.mp.net.public_ip;
+        if (public_ip.length() > 0) {
+            return public_ip;
         }
 
         String localIp = getLocalIp();
@@ -75,15 +77,15 @@ public final class ConfigTools {
 
 
     public static String getConnectServerRegisterIp() {
-        if (IConfig.mp.net.connect_server_register_ip.length() > 0) {
-            return IConfig.mp.net.connect_server_register_ip;
+        if (connect_server_register_ip.length() > 0) {
+            return connect_server_register_ip;
         }
         return getPublicIp();
     }
 
     public static String getGatewayServerRegisterIp() {
-        if (IConfig.mp.net.gateway_server_register_ip.length() > 0) {
-            return IConfig.mp.net.gateway_server_register_ip;
+        if (gateway_server_register_ip.length() > 0) {
+            return gateway_server_register_ip;
         }
         return getLocalIp();
     }

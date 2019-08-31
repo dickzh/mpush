@@ -21,7 +21,6 @@ package com.mpush.core.handler;
 
 import com.mpush.api.connection.Connection;
 import com.mpush.api.protocol.Packet;
-import com.mpush.common.ErrorCode;
 import com.mpush.common.handler.BaseMessageHandler;
 import com.mpush.common.message.ErrorMessage;
 import com.mpush.common.message.FastConnectMessage;

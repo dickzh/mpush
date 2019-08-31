@@ -71,6 +71,15 @@ public interface ServerEventListener extends Plugin {
      * <code>@Subscribe 和 @AllowConcurrentEvents</code>注解，
      * 并在构造函数调用EventBus.register(this);
      */
+    default void onGroupEvent(GroupEvent event) {
+    }
+
+    /**
+     * 该事件通过guava EventBus发出，实现接口的方法必须增加
+     *
+     * <code>@Subscribe 和 @AllowConcurrentEvents</code>注解，
+     * 并在构造函数调用EventBus.register(this);
+     */
     default void onUserOnlineEvent(UserOnlineEvent event) {
     }
 

@@ -140,7 +140,9 @@ public class GatewayTCPConnectionFactory extends GatewayConnectionFactory {
     @Override
     public <M extends BaseMessage> boolean send(String hostAndPort, Function<Connection, M> creator, Consumer<M> sender) {
         Connection connection = getConnection(hostAndPort);
-        if (connection == null) return false;// gateway server 找不到，直接返回推送失败
+        if (connection == null) {
+            return false;// gateway server 找不到，直接返回推送失败
+        }
 
         sender.accept(creator.apply(connection));
         return true;
@@ -148,7 +150,9 @@ public class GatewayTCPConnectionFactory extends GatewayConnectionFactory {
 
     @Override
     public <M extends BaseMessage> boolean broadcast(Function<Connection, M> creator, Consumer<M> sender) {
-        if (connections.isEmpty()) return false;
+        if (connections.isEmpty()) {
+            return false;
+        }
         connections
                 .values()
                 .stream()
@@ -193,7 +197,9 @@ public class GatewayTCPConnectionFactory extends GatewayConnectionFactory {
                 logger.error("create gateway connection failure, host={}, port={}", host, port, f.cause());
             }
         });
-        if (sync) future.awaitUninterruptibly();
+        if (sync) {
+            future.awaitUninterruptibly();
+        }
     }
 
     @Subscribe

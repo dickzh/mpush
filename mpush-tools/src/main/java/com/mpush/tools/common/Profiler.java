@@ -56,7 +56,9 @@ public class Profiler {
      * @param message 第一个entry的信息
      */
     public static void start(String message, Object... args) {
-        if (enabled) entryStack.set(new Entry(String.format(message, args), null, null));
+        if (enabled) {
+            entryStack.set(new Entry(String.format(message, args), null, null));
+        }
     }
 
     /**
@@ -65,7 +67,9 @@ public class Profiler {
      * @param message 第一个entry的信息
      */
     public static void start(Message message) {
-        if (enabled) entryStack.set(new Entry(message, null, null));
+        if (enabled) {
+            entryStack.set(new Entry(message, null, null));
+        }
     }
 
     /**
@@ -417,6 +421,7 @@ public class Profiler {
          *
          * @return 字符串表示的entry
          */
+        @Override
         public String toString() {
             return toString("", "");
         }

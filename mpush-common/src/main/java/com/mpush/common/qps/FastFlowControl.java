@@ -65,7 +65,9 @@ public final class FastFlowControl implements FlowControl {
             return true;
         }
 
-        if (total > maxLimit) throw new OverFlowException(true);
+        if (total > maxLimit) {
+            throw new OverFlowException(true);
+        }
 
         if (System.nanoTime() - start > duration) {
             reset();

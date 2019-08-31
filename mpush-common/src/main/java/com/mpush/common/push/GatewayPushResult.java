@@ -38,7 +38,9 @@ public final class GatewayPushResult {
     public GatewayPushResult(String userId, Integer clientType, Object[] timePoints) {
         this.userId = userId;
         this.timePoints = timePoints;
-        if (clientType > 0) this.clientType = clientType;
+        if (clientType > 0) {
+            this.clientType = clientType;
+        }
     }
 
     public static String toJson(GatewayPushMessage message, Object[] timePoints) {
@@ -46,7 +48,9 @@ public final class GatewayPushResult {
     }
 
     public static GatewayPushResult fromJson(String json) {
-        if (json == null) return null;
+        if (json == null) {
+            return null;
+        }
         return Jsons.fromJson(json, GatewayPushResult.class);
     }
 }

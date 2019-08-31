@@ -73,6 +73,7 @@ public abstract class NettyTCPServer extends BaseService implements Server {
         this.host = host;
     }
 
+    @Override
     public void init() {
         if (!serverState.compareAndSet(State.Created, State.Initialized)) {
             throw new ServiceException("Server already init");
@@ -87,13 +88,19 @@ public abstract class NettyTCPServer extends BaseService implements Server {
     @Override
     public void stop(Listener listener) {
         if (!serverState.compareAndSet(State.Started, State.Shutdown)) {
-            if (listener != null) listener.onFailure(new ServiceException("server was already shutdown."));
+            if (listener != null) {
+                listener.onFailure(new ServiceException("server was already shutdown."));
+            }
             logger.error("{} was already shutdown.", this.getClass().getSimpleName());
             return;
         }
         logger.info("try shutdown {}...", this.getClass().getSimpleName());
-        if (bossGroup != null) bossGroup.shutdownGracefully().syncUninterruptibly();//要先关闭接收连接的main reactor
-        if (workerGroup != null) workerGroup.shutdownGracefully().syncUninterruptibly();//再关闭处理业务的sub reactor
+        if (bossGroup != null) {
+            bossGroup.shutdownGracefully().syncUninterruptibly();//要先关闭接收连接的main reactor
+        }
+        if (workerGroup != null) {
+            workerGroup.shutdownGracefully().syncUninterruptibly();//再关闭处理业务的sub reactor
+        }
         logger.info("{} shutdown success.", this.getClass().getSimpleName());
         if (listener != null) {
             listener.onSuccess(port);
@@ -171,15 +178,21 @@ public abstract class NettyTCPServer extends BaseService implements Server {
                 if (future.isSuccess()) {
                     serverState.set(State.Started);
                     logger.info("server start success on:{}", port);
-                    if (listener != null) listener.onSuccess(port);
+                    if (listener != null) {
+                        listener.onSuccess(port);
+                    }
                 } else {
                     logger.error("server start failure on:{}", port, future.cause());
-                    if (listener != null) listener.onFailure(future.cause());
+                    if (listener != null) {
+                        listener.onFailure(future.cause());
+                    }
                 }
             });
         } catch (Exception e) {
             logger.error("server start exception", e);
-            if (listener != null) listener.onFailure(e);
+            if (listener != null) {
+                listener.onFailure(e);
+            }
             throw new ServiceException("server start exception, port=" + port, e);
         }
     }

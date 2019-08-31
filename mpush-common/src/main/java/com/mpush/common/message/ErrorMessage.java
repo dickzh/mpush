@@ -69,10 +69,18 @@ public final class ErrorMessage extends ByteBufMessage {
     @Override
     protected Map<String, Object> encodeJsonBody() {
         Map<String, Object> body = new HashMap<>(4);
-        if (cmd > 0) body.put("cmd", cmd);
-        if (code > 0) body.put("code", code);
-        if (reason != null) body.put("reason", reason);
-        if (data != null) body.put("data", data);
+        if (cmd > 0) {
+            body.put("cmd", cmd);
+        }
+        if (code > 0) {
+            body.put("code", code);
+        }
+        if (reason != null) {
+            body.put("reason", reason);
+        }
+        if (data != null) {
+            body.put("data", data);
+        }
         return body;
     }
 

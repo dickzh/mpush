@@ -71,10 +71,14 @@ public abstract class NettyTCPClient extends BaseService implements Client {
     public ChannelFuture connect(String host, int port, Listener listener) {
         return bootstrap.connect(new InetSocketAddress(host, port)).addListener(f -> {
             if (f.isSuccess()) {
-                if (listener != null) listener.onSuccess(port);
+                if (listener != null) {
+                    listener.onSuccess(port);
+                }
                 logger.info("start netty client success, host={}, port={}", host, port);
             } else {
-                if (listener != null) listener.onFailure(f.cause());
+                if (listener != null) {
+                    listener.onFailure(f.cause());
+                }
                 logger.error("start netty client failure, host={}, port={}", host, port, f.cause());
             }
         });

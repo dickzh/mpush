@@ -29,9 +29,7 @@ import com.mpush.common.handler.BaseMessageHandler;
 import com.mpush.common.message.ErrorMessage;
 import com.mpush.tools.log.Logs;
 
-import static com.mpush.common.ErrorCode.OFFLINE;
-import static com.mpush.common.ErrorCode.PUSH_CLIENT_FAILURE;
-import static com.mpush.common.ErrorCode.ROUTER_CHANGE;
+import static com.mpush.common.ErrorCode.*;
 
 /**
  * Created by ohun on 16/10/21.

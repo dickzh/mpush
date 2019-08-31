@@ -71,18 +71,26 @@ public class DnsMapping {
                 .append(port)
                 .append(uri.getPath());
         String query = uri.getQuery();
-        if (query != null) sb.append('?').append(query);
+        if (query != null) {
+            sb.append('?').append(query);
+        }
         return sb.toString();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         DnsMapping that = (DnsMapping) o;
 
-        if (port != that.port) return false;
+        if (port != that.port) {
+            return false;
+        }
         return ip.equals(that.ip);
     }
 

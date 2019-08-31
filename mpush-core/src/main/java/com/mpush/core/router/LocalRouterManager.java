@@ -89,15 +89,21 @@ public final class LocalRouterManager extends EventConsumer implements RouterMan
     @AllowConcurrentEvents
     void onConnectionCloseEvent(ConnectionCloseEvent event) {
         Connection connection = event.connection;
-        if (connection == null) return;
+        if (connection == null) {
+            return;
+        }
         SessionContext context = connection.getSessionContext();
 
         String userId = context.userId;
-        if (userId == null) return;
+        if (userId == null) {
+            return;
+        }
 
         int clientType = context.getClientType();
         LocalRouter localRouter = routers.getOrDefault(userId, EMPTY).get(clientType);
-        if (localRouter == null) return;
+        if (localRouter == null) {
+            return;
+        }
 
         String connId = connection.getId();
         //2.检测下，是否是同一个链接, 如果客户端重连，老的路由会被新的链接覆盖

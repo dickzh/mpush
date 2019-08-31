@@ -34,8 +34,6 @@ import com.mpush.core.session.ReusableSession;
 import com.mpush.core.session.ReusableSessionManager;
 import com.mpush.tools.config.ConfigTools;
 import com.mpush.tools.log.Logs;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 
 import static com.mpush.common.ErrorCode.REPEAT_HANDSHAKE;
 

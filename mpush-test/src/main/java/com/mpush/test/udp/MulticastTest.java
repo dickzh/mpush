@@ -22,7 +22,10 @@ package com.mpush.test.udp;
 import com.mpush.tools.Utils;
 import org.junit.Test;
 
-import java.net.*;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.StandardProtocolFamily;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 

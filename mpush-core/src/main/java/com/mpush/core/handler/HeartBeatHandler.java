@@ -19,8 +19,8 @@
 
 package com.mpush.core.handler;
 
-import com.mpush.api.message.MessageHandler;
 import com.mpush.api.connection.Connection;
+import com.mpush.api.message.MessageHandler;
 import com.mpush.api.protocol.Packet;
 import com.mpush.tools.log.Logs;
 

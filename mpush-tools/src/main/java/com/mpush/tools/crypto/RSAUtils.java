@@ -285,7 +285,9 @@ public final class RSAUtils {
 
     private static int getTmpArrayLength(int L) {
         int S = MAX_DECRYPT_BLOCK;
-        while (S < L) S <<= 1;
+        while (S < L) {
+            S <<= 1;
+        }
         return S;
     }
 
@@ -379,8 +381,12 @@ public final class RSAUtils {
 
     public static void main(String[] args) throws Exception {
         int keySize = RAS_KEY_SIZE;
-        if (args.length > 0) keySize = Integer.parseInt(args[0]);
-        if (keySize < RAS_KEY_SIZE) keySize = RAS_KEY_SIZE;
+        if (args.length > 0) {
+            keySize = Integer.parseInt(args[0]);
+        }
+        if (keySize < RAS_KEY_SIZE) {
+            keySize = RAS_KEY_SIZE;
+        }
         Pair<RSAPublicKey, RSAPrivateKey> pair = RSAUtils.genKeyPair(keySize);
         //生成公钥和私钥
         RSAPublicKey publicKey = pair.key;

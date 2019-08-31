@@ -21,8 +21,6 @@ package com.mpush.client.user;
 
 import com.mpush.api.spi.common.MQClientFactory;
 import com.mpush.api.spi.common.MQMessageReceiver;
-import com.mpush.tools.Utils;
-import com.mpush.tools.config.ConfigTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

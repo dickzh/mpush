@@ -93,10 +93,12 @@ public final class RedisBroadcastController implements BroadcastController {
         return (int) cacheManager.hincrBy(taskKey, TASK_SEND_COUNT_FIELD, count);
     }
 
+    @Override
     public void success(String... userIds) {
         cacheManager.lpush(taskSuccessUIDKey, userIds);
     }
 
+    @Override
     public List<String> successUserIds() {
         return cacheManager.lrange(taskSuccessUIDKey, 0, -1, String.class);
     }

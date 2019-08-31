@@ -81,7 +81,9 @@ public final class SpiLoader {
                     return order1 - order2;
                 });
             }
-            if (list.size() > 0) return list.get(0);
+            if (list.size() > 0) {
+                return list.get(0);
+            }
         } else {
             while (it.hasNext()) {
                 T t = it.next();

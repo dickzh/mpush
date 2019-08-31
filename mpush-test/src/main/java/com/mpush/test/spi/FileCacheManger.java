@@ -31,7 +31,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by ohun on 2016/12/28.
@@ -106,7 +109,9 @@ public final class FileCacheManger implements CacheManager {
     @Override
     public <T> T get(String key, Class<T> tClass) {
         Object obj = cache.get(key);
-        if (obj == null) return null;
+        if (obj == null) {
+            return null;
+        }
         return Jsons.fromJson(obj.toString(), tClass);
     }
 
@@ -125,7 +130,9 @@ public final class FileCacheManger implements CacheManager {
     @Override
     public <T> T hget(String key, String field, Class<T> tClass) {
         Object obj = ((Map) cache.computeIfAbsent(key, k -> new ConcurrentHashMap<>())).get(field);
-        if (obj == null) return null;
+        if (obj == null) {
+            return null;
+        }
         return Jsons.fromJson(obj.toString(), tClass);
     }
 
@@ -140,7 +147,9 @@ public final class FileCacheManger implements CacheManager {
     @Override
     public <T> Map<String, T> hgetAll(String key, Class<T> clazz) {
         Map<String, Object> m = (Map) cache.get(key);
-        if (m == null || m.isEmpty()) return Collections.emptyMap();
+        if (m == null || m.isEmpty()) {
+            return Collections.emptyMap();
+        }
 
         Map<String, T> result = new HashMap<>();
         for (Map.Entry<String, Object> o : m.entrySet()) {

@@ -71,8 +71,8 @@ public final class Utils {
     public static boolean isLocalHost(String host) {
         return host == null
                 || host.length() == 0
-                || host.equalsIgnoreCase("localhost")
-                || host.equals("0.0.0.0")
+                || "localhost".equalsIgnoreCase(host)
+                || "0.0.0.0".equals(host)
                 || (LOCAL_IP_PATTERN.matcher(host).matches());
     }
 
@@ -95,9 +95,15 @@ public final class Utils {
             Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
             while (addresses.hasMoreElements()) {
                 InetAddress address = addresses.nextElement();
-                if (address.isLoopbackAddress()) continue;
-                if (address.getHostAddress().contains(":")) continue;
-                if (address.isSiteLocalAddress()) return networkInterface;
+                if (address.isLoopbackAddress()) {
+                    continue;
+                }
+                if (address.getHostAddress().contains(":")) {
+                    continue;
+                }
+                if (address.isSiteLocalAddress()) {
+                    return networkInterface;
+                }
             }
         }
         throw new RuntimeException("NetworkInterface not found");
@@ -124,8 +130,12 @@ public final class Utils {
                 Enumeration<InetAddress> addresses = interfaces.nextElement().getInetAddresses();
                 while (addresses.hasMoreElements()) {
                     InetAddress address = addresses.nextElement();
-                    if (address.isLoopbackAddress()) continue;
-                    if (address.getHostAddress().contains(":")) continue;
+                    if (address.isLoopbackAddress()) {
+                        continue;
+                    }
+                    if (address.getHostAddress().contains(":")) {
+                        continue;
+                    }
                     if (getLocal) {
                         if (address.isSiteLocalAddress()) {
                             return address.getHostAddress();
@@ -168,18 +178,26 @@ public final class Utils {
 
 
     public static Map<String, String> headerFromString(String headersString) {
-        if (headersString == null) return null;
+        if (headersString == null) {
+            return null;
+        }
         Map<String, String> headers = new HashMap<>();
         int L = headersString.length();
         String name, value = null;
         for (int i = 0, start = 0; i < L; i++) {
             char c = headersString.charAt(i);
-            if (c != '\n') continue;
-            if (start >= L - 1) break;
+            if (c != '\n') {
+                continue;
+            }
+            if (start >= L - 1) {
+                break;
+            }
             String header = headersString.substring(start, i);
             start = i + 1;
             int index = header.indexOf(':');
-            if (index <= 0) continue;
+            if (index <= 0) {
+                continue;
+            }
             name = header.substring(0, index);
             if (index < header.length() - 1) {
                 value = header.substring(index + 1);

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,29 +14,36 @@
  * limitations under the License.
  *
  * Contributors:
- *   ohun@live.cn (夜色)
+ *     ohun@live.cn (夜色)
  */
 
-package com.mpush.api.connection;
+package com.mpush.common.router;
 
-import io.netty.channel.Channel;
 
 /**
- * Created by ohun on 2015/12/30.
+ * Created by ohun on 16/10/23.
  *
  * @author ohun@live.cn (夜色)
  */
-public interface ConnectionManager {
+public interface GroupRemoteMsg {
+    String getUserId();
 
-    Connection get(Channel channel);
+    String getDeviceId();
 
-    Connection removeAndClose(Channel channel);
+    String getGroupId();
 
-    void add(Connection connection);
+    String getMsgType();
 
-    int getConnNum();
+    String getConnId();
 
-    void init();
+    int getClientType();
 
-    void destroy();
+    String getTargetServer();
+
+    int getTargetPort();
+
+    default boolean isTargetMachine(String host, int port) {
+        return this.getTargetPort() == port
+                && this.getTargetServer().equals(host);
+    }
 }

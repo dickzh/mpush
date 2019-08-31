@@ -17,26 +17,25 @@
  *   ohun@live.cn (夜色)
  */
 
-package com.mpush.api.connection;
-
-import io.netty.channel.Channel;
+package com.mpush.api.event;
 
 /**
- * Created by ohun on 2015/12/30.
+ * Created by ohun on 2015/12/29.
  *
- * @author ohun@live.cn (夜色)
+ * @author ohun@live.cn
  */
-public interface ConnectionManager {
+public final class GroupEvent implements Event {
+    public final String userId;
+    public final String deviceId;
+    public final String groupId;
+    public final String msgType;
+    public final String fromServer;
 
-    Connection get(Channel channel);
-
-    Connection removeAndClose(Channel channel);
-
-    void add(Connection connection);
-
-    int getConnNum();
-
-    void init();
-
-    void destroy();
+    public GroupEvent(String userId, String deviceId, String groupId, String msgType, String fromServer) {
+        this.userId = userId;
+        this.deviceId = deviceId;
+        this.groupId = groupId;
+        this.msgType = msgType;
+        this.fromServer = fromServer;
+    }
 }

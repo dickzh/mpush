@@ -44,7 +44,9 @@ public final class ReusableSession {
 
     public static ReusableSession decode(String value) {
         String[] array = value.split(",");
-        if (array.length != 6) return null;
+        if (array.length != 6) {
+            return null;
+        }
         SessionContext context = new SessionContext();
         context.osName = array[0];
         context.osVersion = array[1];
@@ -52,7 +54,9 @@ public final class ReusableSession {
         context.deviceId = array[3];
         byte[] key = AesCipher.toArray(array[4]);
         byte[] iv = AesCipher.toArray(array[5]);
-        if (key == null || iv == null) return null;
+        if (key == null || iv == null) {
+            return null;
+        }
         context.cipher = new AesCipher(key, iv);
         ReusableSession session = new ReusableSession();
         session.context = context;

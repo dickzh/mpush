@@ -24,7 +24,9 @@ import com.mpush.api.common.Condition;
 import com.mpush.api.connection.Connection;
 import com.mpush.api.protocol.Packet;
 import com.mpush.api.spi.push.IPushMessage;
-import com.mpush.common.condition.*;
+import com.mpush.common.condition.AwaysPassCondition;
+import com.mpush.common.condition.ScriptCondition;
+import com.mpush.common.condition.TagsCondition;
 import com.mpush.common.memory.PacketFactory;
 import com.mpush.common.message.ByteBufMessage;
 import com.mpush.tools.Jsons;
@@ -84,7 +86,9 @@ public final class GatewayPushMessage extends ByteBufMessage implements IPushMes
 
     private Set<String> decodeSet(ByteBuf body) {
         String json = decodeString(body);
-        if (json == null) return null;
+        if (json == null) {
+            return null;
+        }
         return Jsons.fromJson(json, new TypeReference<Set<String>>() {
         }.getType());
     }

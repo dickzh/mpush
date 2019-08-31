@@ -61,7 +61,9 @@ public enum Command {
 
     public static Command toCMD(byte b) {
         Command[] values = values();
-        if (b > 0 && b < values.length) return values[b - 1];
+        if (b > 0 && b < values.length) {
+            return values[b - 1];
+        }
         return UNKNOWN;
     }
 }

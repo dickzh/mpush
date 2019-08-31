@@ -1,5 +1,7 @@
 package com.mpush.tools.config;
 
+import com.typesafe.config.*;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -8,20 +10,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.time.Duration;
-
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigList;
-import com.typesafe.config.ConfigException;
-import com.typesafe.config.ConfigMemorySize;
-import com.typesafe.config.ConfigValue;
-import com.typesafe.config.ConfigValueType;
-import com.typesafe.config.impl.ConfigImplUtil;
 
 /**
  * Internal implementation detail, not ABI stable, do not touch.

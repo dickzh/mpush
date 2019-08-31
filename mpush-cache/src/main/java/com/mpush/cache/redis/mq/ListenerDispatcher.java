@@ -61,6 +61,7 @@ public final class ListenerDispatcher implements MQClient {
         }
     }
 
+    @Override
     public void subscribe(String channel, MQMessageReceiver listener) {
         subscribes.computeIfAbsent(channel, k -> Lists.newArrayList()).add(listener);
         RedisManager.instance.subscribe(subscriber, channel);

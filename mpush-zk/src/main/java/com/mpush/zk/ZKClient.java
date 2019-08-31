@@ -87,7 +87,9 @@ public class ZKClient extends BaseService {
 
     @Override
     protected void doStop(Listener listener) throws Throwable {
-        if (cache != null) cache.close();
+        if (cache != null) {
+            cache.close();
+        }
         TimeUnit.MILLISECONDS.sleep(600);
         client.close();
         Logs.SRD.info("zk client closed...");
@@ -99,7 +101,9 @@ public class ZKClient extends BaseService {
      */
     @Override
     public void init() {
-        if (client != null) return;
+        if (client != null) {
+            return;
+        }
         if (zkConfig == null) {
             zkConfig = ZKConfig.build();
         }
@@ -203,7 +207,9 @@ public class ZKClient extends BaseService {
      */
     public List<String> getChildrenKeys(final String key) {
         try {
-            if (!isExisted(key)) return Collections.emptyList();
+            if (!isExisted(key)) {
+                return Collections.emptyList();
+            }
             List<String> result = client.getChildren().forPath(key);
             result.sort(Comparator.reverseOrder());
             return result;
@@ -279,7 +285,9 @@ public class ZKClient extends BaseService {
                 client.delete().deletingChildrenIfNeeded().forPath(key);
             }
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(Constants.UTF_8));
-            if (cacheNode) ephemeralNodes.put(key, value);
+            if (cacheNode) {
+                ephemeralNodes.put(key, value);
+            }
         } catch (Exception ex) {
             Logs.SRD.error("persistEphemeral:{},{}", key, value, ex);
             throw new ZKException(ex);
@@ -316,7 +324,9 @@ public class ZKClient extends BaseService {
     private void registerEphemeralSequential(final String key, final String value, boolean cacheNode) {
         try {
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(key, value.getBytes());
-            if (cacheNode) ephemeralSequentialNodes.put(key, value);
+            if (cacheNode) {
+                ephemeralSequentialNodes.put(key, value);
+            }
         } catch (Exception ex) {
             Logs.SRD.error("persistEphemeralSequential:{},{}", key, value, ex);
             throw new ZKException(ex);

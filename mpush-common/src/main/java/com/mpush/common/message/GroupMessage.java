@@ -27,26 +27,28 @@ import io.netty.buffer.ByteBuf;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mpush.api.protocol.Command.KICK;
+import static com.mpush.api.protocol.Command.GROUP;
 
 /**
  * Created by ohun on 2015/12/29.
  *
  * @author ohun@live.cn
  */
-public class KickUserMessage extends ByteBufMessage {
+public class GroupMessage extends ByteBufMessage {
     public String deviceId;
     public String userId;
+    public String groupId;
+    public String msgType;
 
-    public KickUserMessage(Packet message, Connection connection) {
+    public GroupMessage(Packet message, Connection connection) {
         super(message, connection);
     }
 
-    public static KickUserMessage build(Connection connection) {
+    public static GroupMessage build(Connection connection) {
         if (connection.getSessionContext().isSecurity()) {
-            return new KickUserMessage(new Packet(KICK), connection);
+            return new GroupMessage(new Packet(GROUP), connection);
         } else {
-            return new KickUserMessage(new JsonPacket(KICK), connection);
+            return new GroupMessage(new JsonPacket(GROUP), connection);
         }
     }
 
@@ -54,19 +56,25 @@ public class KickUserMessage extends ByteBufMessage {
     public void decode(ByteBuf body) {
         deviceId = decodeString(body);
         userId = decodeString(body);
+        groupId = decodeString(body);
+        msgType = decodeString(body);
     }
 
     @Override
     public void encode(ByteBuf body) {
         encodeString(body, deviceId);
         encodeString(body, userId);
+        encodeString(body, groupId);
+        encodeString(body, msgType);
     }
 
     @Override
     protected Map<String, Object> encodeJsonBody() {
-        Map<String, Object> body = new HashMap<>(2);
+        Map<String, Object> body = new HashMap<>(3);
         body.put("deviceId", deviceId);
         body.put("userId", userId);
+        body.put("groupId", groupId);
+        body.put("msgType", msgType);
         return body;
     }
 
@@ -75,6 +83,8 @@ public class KickUserMessage extends ByteBufMessage {
         return "KickUserMessage{" +
                 "deviceId='" + deviceId + '\'' +
                 ", userId='" + userId + '\'' +
+                ", groupId='" + groupId + '\'' +
+                ", msgType='" + msgType + '\'' +
                 '}';
     }
 }

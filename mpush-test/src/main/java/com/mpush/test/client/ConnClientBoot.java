@@ -86,7 +86,9 @@ public final class ConnClientBoot extends BaseService {
 
     @Override
     protected void doStop(Listener listener) throws Throwable {
-        if (workerGroup != null) workerGroup.shutdownGracefully();
+        if (workerGroup != null) {
+            workerGroup.shutdownGracefully();
+        }
         ServiceDiscoveryFactory.create().syncStop();
         CacheManagerFactory.create().destroy();
         listener.onSuccess();
@@ -98,7 +100,9 @@ public final class ConnClientBoot extends BaseService {
 
     public ChannelFuture connect(InetSocketAddress remote, InetSocketAddress local, ClientConfig clientConfig) {
         ChannelFuture future = local != null ? bootstrap.connect(remote, local) : bootstrap.connect(remote);
-        if (future.channel() != null) future.channel().attr(CONFIG_KEY).set(clientConfig);
+        if (future.channel() != null) {
+            future.channel().attr(CONFIG_KEY).set(clientConfig);
+        }
         future.addListener(f -> {
             if (f.isSuccess()) {
                 future.channel().attr(CONFIG_KEY).set(clientConfig);

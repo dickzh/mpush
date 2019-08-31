@@ -109,7 +109,9 @@ public class ZKSyncMap<K, V> implements Map<K, V> {
     public V remove(Object key) {
         try {
             V result = get(key);
-            if (result != null) curator.delete().deletingChildrenIfNeeded().forPath(keyPath(key));
+            if (result != null) {
+                curator.delete().deletingChildrenIfNeeded().forPath(keyPath(key));
+            }
             return result;
         } catch (Exception e) {
             throw new ZKException(e);

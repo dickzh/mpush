@@ -20,8 +20,6 @@
 package com.mpush.bootstrap.job;
 
 import com.mpush.api.spi.common.ServiceDiscoveryFactory;
-import com.mpush.api.spi.common.ServiceRegistryFactory;
-import com.mpush.api.srd.ServiceDiscovery;
 import com.mpush.tools.log.Logs;
 
 /**

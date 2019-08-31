@@ -157,14 +157,18 @@ public final class URI {
         }
         i = url.indexOf("://");
         if (i >= 0) {
-            if (i == 0) throw new IllegalStateException("url missing protocol: \"" + url + "\"");
+            if (i == 0) {
+                throw new IllegalStateException("url missing protocol: \"" + url + "\"");
+            }
             protocol = url.substring(0, i);
             url = url.substring(i + 3);
         } else {
             // case: file:/path/to/file.txt
             i = url.indexOf(":/");
             if (i >= 0) {
-                if (i == 0) throw new IllegalStateException("url missing protocol: \"" + url + "\"");
+                if (i == 0) {
+                    throw new IllegalStateException("url missing protocol: \"" + url + "\"");
+                }
                 protocol = url.substring(0, i);
                 url = url.substring(i + 1);
             }
@@ -190,7 +194,9 @@ public final class URI {
             port = Integer.parseInt(url.substring(i + 1));
             url = url.substring(0, i);
         }
-        if (url.length() > 0) host = url;
+        if (url.length() > 0) {
+            host = url;
+        }
         return new URI(protocol, username, password, host, port, path, parameters);
     }
 
@@ -619,10 +625,11 @@ public final class URI {
 
     //$NON-NLS-分组参数结束$
 
+    private static Pattern LOCAL_HOST = Pattern.compile("127(\\.\\d{1,3}){3}$");
     public boolean isLocalHost() {
         return host != null
-                && (Pattern.compile("127(\\.\\d{1,3}){3}$").matcher(host).matches()
-                || host.equalsIgnoreCase("localhost"));
+                && (LOCAL_HOST.matcher(host).matches()
+                || "localhost".equalsIgnoreCase(host));
     }
 
     public boolean isAnyHost() {
@@ -662,17 +669,23 @@ public final class URI {
     }
 
     public URI addParameter(String key, Enum<?> value) {
-        if (value == null) return this;
+        if (value == null) {
+            return this;
+        }
         return addParameter(key, String.valueOf(value));
     }
 
     public URI addParameter(String key, Number value) {
-        if (value == null) return this;
+        if (value == null) {
+            return this;
+        }
         return addParameter(key, String.valueOf(value));
     }
 
     public URI addParameter(String key, CharSequence value) {
-        if (value == null || value.length() == 0) return this;
+        if (value == null || value.length() == 0) {
+            return this;
+        }
         return addParameter(key, String.valueOf(value));
     }
 
@@ -722,7 +735,9 @@ public final class URI {
             }
         }
         // 如果没有修改，直接返回。
-        if (hasAndEqual) return this;
+        if (hasAndEqual) {
+            return this;
+        }
 
         Map<String, String> map = new HashMap<String, String>(getParameters());
         map.putAll(parameters);
@@ -830,6 +845,7 @@ public final class URI {
         return map;
     }
 
+    @Override
     public String toString() {
         if (string != null) {
             return string;
@@ -999,18 +1015,36 @@ public final class URI {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         URI uri = (URI) o;
 
-        if (port != uri.port) return false;
-        if (protocol != null ? !protocol.equals(uri.protocol) : uri.protocol != null) return false;
-        if (username != null ? !username.equals(uri.username) : uri.username != null) return false;
-        if (password != null ? !password.equals(uri.password) : uri.password != null) return false;
-        if (host != null ? !host.equals(uri.host) : uri.host != null) return false;
-        if (path != null ? !path.equals(uri.path) : uri.path != null) return false;
-        if (parameters != null ? !parameters.equals(uri.parameters) : uri.parameters != null) return false;
+        if (port != uri.port) {
+            return false;
+        }
+        if (protocol != null ? !protocol.equals(uri.protocol) : uri.protocol != null) {
+            return false;
+        }
+        if (username != null ? !username.equals(uri.username) : uri.username != null) {
+            return false;
+        }
+        if (password != null ? !password.equals(uri.password) : uri.password != null) {
+            return false;
+        }
+        if (host != null ? !host.equals(uri.host) : uri.host != null) {
+            return false;
+        }
+        if (path != null ? !path.equals(uri.path) : uri.path != null) {
+            return false;
+        }
+        if (parameters != null ? !parameters.equals(uri.parameters) : uri.parameters != null) {
+            return false;
+        }
         return true;
     }
 }

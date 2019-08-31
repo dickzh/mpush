@@ -253,7 +253,9 @@ public final class PushRequest extends FutureTask<PushResult> {
     }
 
     public void onSuccess(GatewayPushResult result) {
-        if (result != null) timeLine.addTimePoints(result.timePoints);
+        if (result != null) {
+            timeLine.addTimePoints(result.timePoints);
+        }
         submit(Status.success);
     }
 

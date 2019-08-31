@@ -46,13 +46,17 @@ public enum ClientType {
 
     public static ClientType find(String osName) {
         for (ClientType type : values()) {
-            if (type.contains(osName.toLowerCase())) return type;
+            if (type.contains(osName.toLowerCase())) {
+                return type;
+            }
         }
         return UNKNOWN;
     }
 
     public static boolean isSameClient(String osNameA, String osNameB) {
-        if (osNameA.equals(osNameB)) return true;
+        if (osNameA.equals(osNameB)) {
+            return true;
+        }
         return find(osNameA).contains(osNameB);
     }
 }

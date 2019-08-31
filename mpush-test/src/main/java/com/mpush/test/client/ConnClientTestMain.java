@@ -33,8 +33,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
-import static com.mpush.api.srd.ServiceNames.ATTR_PUBLIC_IP;
-
 public class ConnClientTestMain {
 
     public static void main(String[] args) throws Exception {
@@ -111,7 +109,9 @@ public class ConnClientTestMain {
             ServiceNode node = serverList.get(index);
 
             ChannelFuture future = boot.connect(node.getHost(), node.getPort(), config);
-            if (sync) future.awaitUninterruptibly();
+            if (sync) {
+                future.awaitUninterruptibly();
+            }
         }
     }
 }

@@ -111,7 +111,9 @@ public final class RouterCenter extends BaseService {
 
     public Router<?> lookup(String userId, int clientType) {
         LocalRouter local = localRouterManager.lookup(userId, clientType);
-        if (local != null) return local;
+        if (local != null) {
+            return local;
+        }
         RemoteRouter remote = remoteRouterManager.lookup(userId, clientType);
         return remote;
     }

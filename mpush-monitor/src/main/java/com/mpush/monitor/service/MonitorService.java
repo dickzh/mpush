@@ -77,7 +77,9 @@ public class MonitorService extends BaseService implements Monitor, Runnable {
             try {
                 TimeUnit.SECONDS.sleep(dumpPeriod);
             } catch (InterruptedException e) {
-                if (isRunning()) stop();
+                if (isRunning()) {
+                    stop();
+                }
             }
         }
     }
@@ -94,7 +96,9 @@ public class MonitorService extends BaseService implements Monitor, Runnable {
 
     @Override
     protected void doStop(Listener listener) throws Throwable {
-        if (thread != null && thread.isAlive()) thread.interrupt();
+        if (thread != null && thread.isAlive()) {
+            thread.interrupt();
+        }
         listener.onSuccess();
     }
 

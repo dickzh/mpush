@@ -19,8 +19,8 @@
 
 package com.mpush.netty.codec;
 
-import com.mpush.api.protocol.Packet;
 import com.mpush.api.protocol.JsonPacket;
+import com.mpush.api.protocol.Packet;
 import com.mpush.api.protocol.UDPPacket;
 import com.mpush.tools.Jsons;
 import com.mpush.tools.config.IConfig;
@@ -100,7 +100,9 @@ public final class PacketDecoder extends ByteToMessageDecoder {
     }
 
     public static Packet decodeFrame(String frame) throws Exception {
-        if (frame == null) return null;
+        if (frame == null) {
+            return null;
+        }
         return Jsons.fromJson(frame, JsonPacket.class);
     }
 }

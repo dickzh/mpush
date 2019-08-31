@@ -29,8 +29,6 @@ import com.mpush.common.handler.BaseMessageHandler;
 import com.mpush.common.message.OkMessage;
 import com.mpush.common.push.GatewayPushResult;
 import com.mpush.tools.log.Logs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by ohun on 16/10/21.

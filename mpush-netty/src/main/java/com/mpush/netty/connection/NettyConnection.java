@@ -106,7 +106,9 @@ public final class NettyConnection implements Connection, ChannelFutureListener 
 
     @Override
     public ChannelFuture close() {
-        if (status == STATUS_DISCONNECTED) return null;
+        if (status == STATUS_DISCONNECTED) {
+            return null;
+        }
         this.status = STATUS_DISCONNECTED;
         return this.channel.close();
     }
@@ -163,8 +165,12 @@ public final class NettyConnection implements Connection, ChannelFutureListener 
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         NettyConnection that = (NettyConnection) o;
 

@@ -34,9 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.mpush.tools.config.IConfig.mp.thread.pool.ack_timer;
 import static com.mpush.tools.config.IConfig.mp.thread.pool.push_client;
-import static com.mpush.tools.thread.ThreadNames.T_ARK_REQ_TIMER;
-import static com.mpush.tools.thread.ThreadNames.T_EVENT_BUS;
-import static com.mpush.tools.thread.ThreadNames.T_PUSH_CLIENT_TIMER;
+import static com.mpush.tools.thread.ThreadNames.*;
 
 /**
  * Created by ohun on 2017/7/15.

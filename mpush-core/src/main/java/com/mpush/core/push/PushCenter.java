@@ -19,27 +19,31 @@
 
 package com.mpush.core.push;
 
-import com.mpush.api.spi.push.*;
 import com.mpush.api.service.BaseService;
 import com.mpush.api.service.Listener;
-import com.mpush.core.MPushServer;
-import com.mpush.core.ack.AckTaskQueue;
+import com.mpush.api.spi.push.IPushMessage;
+import com.mpush.api.spi.push.MessagePusher;
+import com.mpush.api.spi.push.PushListener;
+import com.mpush.api.spi.push.PushListenerFactory;
 import com.mpush.common.qps.FastFlowControl;
 import com.mpush.common.qps.FlowControl;
 import com.mpush.common.qps.GlobalFlowControl;
 import com.mpush.common.qps.RedisFlowControl;
+import com.mpush.core.MPushServer;
+import com.mpush.core.ack.AckTaskQueue;
 import com.mpush.monitor.jmx.MBeanRegistry;
 import com.mpush.monitor.jmx.mxbean.PushCenterBean;
 import com.mpush.tools.config.IConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.mpush.tools.config.IConfig.mp.push.flow_control.broadcast.duration;
-import static com.mpush.tools.config.IConfig.mp.push.flow_control.broadcast.limit;
-import static com.mpush.tools.config.IConfig.mp.push.flow_control.broadcast.max;
+import static com.mpush.tools.config.IConfig.mp.net.udpGateway;
+import static com.mpush.tools.config.IConfig.mp.push.flow_control.broadcast.*;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.push_task;
 
 /**
  * Created by ohun on 16/10/24.
@@ -96,7 +100,7 @@ public final class PushCenter extends BaseService implements MessagePusher {
         this.pushListener = PushListenerFactory.create();
         this.pushListener.init(mPushServer);
 
-        if (IConfig.mp.net.udpGateway() || IConfig.mp.thread.pool.push_task > 0) {
+        if (udpGateway() || push_task > 0) {
             executor = new CustomJDKExecutor(mPushServer.getMonitor().getThreadPoolManager().getPushTaskTimer());
         } else {//实际情况使用EventLoo并没有更快，还有待测试
             executor = new NettyEventLoopExecutor();

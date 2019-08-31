@@ -127,6 +127,7 @@ public class JVMUtil {
     private static HotSpotDiagnosticMXBean getHotSpotMXBean() {
         try {
             return AccessController.doPrivileged(new PrivilegedExceptionAction<HotSpotDiagnosticMXBean>() {
+                @Override
                 public HotSpotDiagnosticMXBean run() throws Exception {
                     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
                     Set<ObjectName> s = server.queryNames(new ObjectName(HOT_SPOT_BEAN_NAME), null);

@@ -2,8 +2,6 @@ package com.mpush.api.push;
 
 import com.mpush.api.router.ClientLocation;
 
-import java.util.List;
-
 /**
  * Created by ohun on 2015/12/30.
  *

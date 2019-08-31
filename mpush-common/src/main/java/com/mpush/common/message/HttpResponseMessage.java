@@ -20,7 +20,6 @@
 package com.mpush.common.message;
 
 import com.mpush.api.connection.Connection;
-import com.mpush.api.protocol.Command;
 import com.mpush.api.protocol.Packet;
 import com.mpush.tools.Utils;
 import io.netty.buffer.ByteBuf;

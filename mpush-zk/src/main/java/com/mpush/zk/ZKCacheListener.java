@@ -48,9 +48,13 @@ public final class ZKCacheListener implements TreeCacheListener {
     @Override
     public void childEvent(CuratorFramework curator, TreeCacheEvent event) throws Exception {
         ChildData data = event.getData();
-        if (data == null) return;
+        if (data == null) {
+            return;
+        }
         String dataPath = data.getPath();
-        if (Strings.isNullOrEmpty(dataPath)) return;
+        if (Strings.isNullOrEmpty(dataPath)) {
+            return;
+        }
         if (dataPath.startsWith(watchPath)) {
             switch (event.getType()) {
                 case NODE_ADDED:

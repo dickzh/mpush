@@ -74,7 +74,9 @@ public class MBeanRegistry {
      * @param bean
      */
     private void unregister(String path, MBeanInfo bean) {
-        if (path == null) return;
+        if (path == null) {
+            return;
+        }
         try {
             mBeanServer.unregisterMBean(makeObjectName(path, bean));
         } catch (JMException e) {
@@ -89,7 +91,9 @@ public class MBeanRegistry {
      * @param bean
      */
     public void unregister(MBeanInfo bean) {
-        if (bean == null) return;
+        if (bean == null) {
+            return;
+        }
 
         String path = mapBean2Path.get(bean);
         unregister(path, bean);
@@ -118,14 +122,17 @@ public class MBeanRegistry {
      * @return absolute path
      */
     public String makeFullPath(String prefix, String... name) {
-        StringBuilder sb = new StringBuilder(prefix == null ? "/" : (prefix.equals("/") ? prefix : prefix + "/"));
+        StringBuilder sb = new StringBuilder(prefix == null ? "/" : ("/".equals(prefix) ? prefix : prefix + "/"));
         boolean first = true;
         for (String s : name) {
-            if (s == null) continue;
+            if (s == null) {
+                continue;
+            }
             if (!first) {
                 sb.append("/");
-            } else
+            } else {
                 first = false;
+            }
             sb.append(s);
         }
         return sb.toString();
@@ -142,8 +149,9 @@ public class MBeanRegistry {
     private int tokenize(StringBuilder sb, String path, int index) {
         String[] tokens = path.split("/");
         for (String s : tokens) {
-            if (s.length() == 0)
+            if (s.length() == 0) {
                 continue;
+            }
             sb.append("name").append(index++)
                     .append("=").append(s).append(",");
         }
@@ -159,8 +167,9 @@ public class MBeanRegistry {
      */
     protected ObjectName makeObjectName(String path, MBeanInfo bean)
             throws MalformedObjectNameException {
-        if (path == null)
+        if (path == null) {
             return null;
+        }
         StringBuilder beanName = new StringBuilder(DOMAIN).append(':');
         int counter = 0;
         counter = tokenize(beanName, path, counter);

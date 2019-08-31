@@ -100,17 +100,24 @@ public class HttpProxyDnsMappingManager extends BaseService implements DnsMappin
         return all;
     }
 
+    @Override
     public DnsMapping lookup(String origin) {
         List<DnsMapping> list = mappings.get(origin);
 
         if (list == null || list.isEmpty()) {
-            if (available.isEmpty()) return null;
+            if (available.isEmpty()) {
+                return null;
+            }
             list = available.get(origin);
         }
 
-        if (list == null || list.isEmpty()) return null;
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
         int L = list.size();
-        if (L == 1) return list.get(0);
+        if (L == 1) {
+            return list.get(0);
+        }
         return list.get((int) (Math.random() * L % L));
     }
 

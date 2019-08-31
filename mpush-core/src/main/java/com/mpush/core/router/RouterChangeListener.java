@@ -37,14 +37,12 @@ import com.mpush.common.router.MQKickRemoteMsg;
 import com.mpush.common.router.RemoteRouter;
 import com.mpush.core.MPushServer;
 import com.mpush.tools.Jsons;
-import com.mpush.tools.config.IConfig;
 import com.mpush.tools.config.ConfigTools;
+import com.mpush.tools.config.IConfig;
 import com.mpush.tools.event.EventConsumer;
 import com.mpush.tools.log.Logs;
 
 import java.net.InetSocketAddress;
-
-import static com.mpush.api.Constants.KICK_CHANNEL_PREFIX;
 
 
 /**

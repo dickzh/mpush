@@ -27,8 +27,7 @@ import com.mpush.core.MPushServer;
 import com.mpush.core.handler.GatewayPushHandler;
 import com.mpush.netty.server.NettyTCPServer;
 import com.mpush.tools.config.IConfig;
-import com.mpush.tools.config.IConfig.mp.net.rcv_buf;
-import com.mpush.tools.config.IConfig.mp.net.snd_buf;
+import com.mpush.tools.config.IConfig.mp.net.*;
 import com.mpush.tools.thread.NamedPoolThreadFactory;
 import com.mpush.tools.thread.ThreadNames;
 import io.netty.bootstrap.ServerBootstrap;
@@ -41,8 +40,7 @@ import java.nio.channels.spi.SelectorProvider;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static com.mpush.tools.config.IConfig.mp.net.gateway_server_bind_ip;
-import static com.mpush.tools.config.IConfig.mp.net.gateway_server_port;
+import static com.mpush.tools.config.IConfig.mp.net.*;
 import static com.mpush.tools.config.IConfig.mp.net.traffic_shaping.gateway_server.*;
 import static com.mpush.tools.config.IConfig.mp.net.write_buffer_water_mark.gateway_server_high;
 import static com.mpush.tools.config.IConfig.mp.net.write_buffer_water_mark.gateway_server_low;
@@ -75,7 +73,7 @@ public final class GatewayServer extends NettyTCPServer {
         super.init();
         messageDispatcher.register(Command.GATEWAY_PUSH, () -> new GatewayPushHandler(mPushServer.getPushCenter()));
 
-        if (IConfig.mp.net.traffic_shaping.gateway_server.enabled) {//启用流量整形，限流
+        if (enabled) {//启用流量整形，限流
             trafficShapingExecutor = Executors.newSingleThreadScheduledExecutor(new NamedPoolThreadFactory(T_TRAFFIC_SHAPING));
             trafficShapingHandler = new GlobalChannelTrafficShapingHandler(
                     trafficShapingExecutor,
@@ -128,8 +126,12 @@ public final class GatewayServer extends NettyTCPServer {
     @Override
     protected void initOptions(ServerBootstrap b) {
         super.initOptions(b);
-        if (snd_buf.gateway_server > 0) b.childOption(ChannelOption.SO_SNDBUF, snd_buf.gateway_server);
-        if (rcv_buf.gateway_server > 0) b.childOption(ChannelOption.SO_RCVBUF, rcv_buf.gateway_server);
+        if (snd_buf.gateway_server > 0) {
+            b.childOption(ChannelOption.SO_SNDBUF, snd_buf.gateway_server);
+        }
+        if (rcv_buf.gateway_server > 0) {
+            b.childOption(ChannelOption.SO_RCVBUF, rcv_buf.gateway_server);
+        }
         /**
          * 这个坑其实也不算坑，只是因为懒，该做的事情没做。一般来讲我们的业务如果比较小的时候我们用同步处理，等业务到一定规模的时候，一个优化手段就是异步化。
          * 异步化是提高吞吐量的一个很好的手段。但是，与异步相比，同步有天然的负反馈机制，也就是如果后端慢了，前面也会跟着慢起来，可以自动的调节。
@@ -157,17 +159,29 @@ public final class GatewayServer extends NettyTCPServer {
 
     @Override
     public ChannelFactory<? extends ServerChannel> getChannelFactory() {
-        if (IConfig.mp.net.tcpGateway()) return super.getChannelFactory();
-        if (IConfig.mp.net.udtGateway()) return NioUdtProvider.BYTE_ACCEPTOR;
-        if (IConfig.mp.net.sctpGateway()) return NioSctpServerChannel::new;
+        if (tcpGateway()) {
+            return super.getChannelFactory();
+        }
+        if (udtGateway()) {
+            return NioUdtProvider.BYTE_ACCEPTOR;
+        }
+        if (sctpGateway()) {
+            return NioSctpServerChannel::new;
+        }
         return super.getChannelFactory();
     }
 
     @Override
     public SelectorProvider getSelectorProvider() {
-        if (IConfig.mp.net.tcpGateway()) return super.getSelectorProvider();
-        if (IConfig.mp.net.udtGateway()) return NioUdtProvider.BYTE_PROVIDER;
-        if (IConfig.mp.net.sctpGateway()) return super.getSelectorProvider();
+        if (tcpGateway()) {
+            return super.getSelectorProvider();
+        }
+        if (udtGateway()) {
+            return NioUdtProvider.BYTE_PROVIDER;
+        }
+        if (sctpGateway()) {
+            return super.getSelectorProvider();
+        }
         return super.getSelectorProvider();
     }
 

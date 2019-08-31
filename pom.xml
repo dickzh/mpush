@@ -224,20 +224,20 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.10</version>
+                <version>4.12</version>
                 <scope>test</scope>
             </dependency>
             <!-- apache commons -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.6</version>
+                <version>3.9</version>
             </dependency>
             <!-- guava -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>20.0</version>
+                <version>22.0</version>
             </dependency>
             <!-- json lib -->
             <dependency>
@@ -249,7 +249,7 @@
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-recipes</artifactId>
-                <version>2.12.0</version><!--(client 2.x.x <==> server 3.4.x) (client 3.x.x <==> server 3.5.x)-->
+                <version>2.13.0</version><!--(client 2.x.x <==> server 3.4.x) (client 3.x.x <==> server 3.5.x)-->
                 <exclusions>
                     <exclusion>
                         <artifactId>netty</artifactId>
@@ -260,14 +260,21 @@
             <dependency>
                 <groupId>org.apache.curator</groupId>
                 <artifactId>curator-x-discovery</artifactId>
-                <version>2.12.0</version><!--(client 2.x.x <==> server 3.4.x) (client 3.x.x <==> server 3.5.x)-->
+                <version>2.13.0</version><!--(client 2.x.x <==> server 3.4.x) (client 3.x.x <==> server 3.5.x)-->
             </dependency>
-            <!-- redis client -->
+            <!-- https://mvnrepository.com/artifact/org.apache.zookeeper/zookeeper -->
             <dependency>
-                <groupId>redis.clients</groupId>
-                <artifactId>jedis</artifactId>
-                <version>2.9.0</version>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>3.4.13</version>
             </dependency>
+
+            <!--&lt;!&ndash; redis client &ndash;&gt;-->
+            <!--<dependency>-->
+                <!--<groupId>redis.clients</groupId>-->
+                <!--<artifactId>jedis</artifactId>-->
+                <!--<version>2.9.0</version>-->
+            <!--</dependency>-->
 
             <!-- https://mvnrepository.com/artifact/io.lettuce/lettuce-core -->
             <dependency>
@@ -286,7 +293,7 @@
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
-                <version>3.22.0-GA</version>
+                <version>3.24.1-GA</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -311,7 +318,7 @@
                     <encoding>${java.encoding}</encoding>
                 </configuration>
             </plugin>
-            <plugin>
+            <plugin>B3FE98EFAD8A4AE0E1700AE0C108C10F1E1D78B8
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.0.2</version>
                 <configuration>

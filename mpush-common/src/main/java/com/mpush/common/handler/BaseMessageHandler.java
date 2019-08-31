@@ -20,8 +20,8 @@
 package com.mpush.common.handler;
 
 
-import com.mpush.api.message.MessageHandler;
 import com.mpush.api.connection.Connection;
+import com.mpush.api.message.MessageHandler;
 import com.mpush.api.protocol.Packet;
 import com.mpush.common.message.BaseMessage;
 import com.mpush.tools.common.Profiler;
@@ -39,10 +39,13 @@ public abstract class BaseMessageHandler<T extends BaseMessage> implements Messa
 
     public abstract void handle(T message);
 
+    @Override
     public void handle(Packet packet, Connection connection) {
         Profiler.enter("time cost on [message decode]");
         T t = decode(packet, connection);
-        if (t != null) t.decodeBody();
+        if (t != null) {
+            t.decodeBody();
+        }
         Profiler.release();
 
         if (t != null) {

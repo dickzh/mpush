@@ -44,7 +44,9 @@ import java.util.List;
 
     public synchronized Channel tryAcquire(String host) {
         List<Channel> channels = channelPool.get(host);
-        if (channels == null || channels.isEmpty()) return null;
+        if (channels == null || channels.isEmpty()) {
+            return null;
+        }
         Iterator<Channel> it = channels.iterator();
         while (it.hasNext()) {
             Channel channel = it.next();

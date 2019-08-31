@@ -1,9 +1,9 @@
 package com.mpush.core.server;
 
-import com.mpush.api.message.PacketReceiver;
 import com.mpush.api.connection.Connection;
 import com.mpush.api.connection.ConnectionManager;
 import com.mpush.api.event.ConnectionCloseEvent;
+import com.mpush.api.message.PacketReceiver;
 import com.mpush.api.protocol.Packet;
 import com.mpush.netty.codec.PacketDecoder;
 import com.mpush.netty.connection.NettyConnection;

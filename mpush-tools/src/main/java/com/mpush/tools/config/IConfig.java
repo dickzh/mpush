@@ -21,7 +21,9 @@ package com.mpush.tools.config;
 
 import com.mpush.api.spi.net.DnsMapping;
 import com.mpush.tools.config.data.RedisNode;
-import com.typesafe.config.*;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigList;
 
 import java.io.File;
 import java.time.Duration;
@@ -76,7 +78,9 @@ public interface IConfig {
             String epoll_provider = cfg.getString("epoll-provider");
 
             static boolean useNettyEpoll() {
-                if (!"netty".equals(IConfig.mp.core.epoll_provider)) return false;
+                if (!"netty".equals(epoll_provider)) {
+                    return false;
+                }
                 String name = IConfig.cfg.getString("os.name").toLowerCase(Locale.UK).trim();
                 return name.startsWith("linux");//只在linux下使用netty提供的epoll库
             }

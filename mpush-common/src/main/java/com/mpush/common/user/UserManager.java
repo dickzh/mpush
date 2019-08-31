@@ -26,7 +26,6 @@ import com.mpush.api.spi.common.CacheManagerFactory;
 import com.mpush.api.spi.common.MQClient;
 import com.mpush.api.spi.common.MQClientFactory;
 import com.mpush.common.CacheKeys;
-import com.mpush.common.router.CachedRemoteRouterManager;
 import com.mpush.common.router.MQKickRemoteMsg;
 import com.mpush.common.router.RemoteRouter;
 import com.mpush.common.router.RemoteRouterManager;

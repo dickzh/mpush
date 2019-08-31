@@ -19,8 +19,8 @@
 
 package com.mpush.core.push;
 
-import com.mpush.api.message.Message;
 import com.mpush.api.connection.Connection;
+import com.mpush.api.message.Message;
 import com.mpush.api.spi.push.IPushMessage;
 import com.mpush.common.message.PushMessage;
 import com.mpush.common.qps.FlowControl;
@@ -85,9 +85,13 @@ public final class SingleUserPushTask implements PushTask, ChannelFutureListener
      */
     @Override
     public void run() {
-        if (checkTimeout()) return;// 超时
+        if (checkTimeout()) {
+            return;// 超时
+        }
 
-        if (checkLocal(message)) return;// 本地连接存在
+        if (checkLocal(message)) {
+            return;// 本地连接存在
+        }
 
         checkRemote(message);//本地连接不存在，检测远程路由
     }
@@ -120,7 +124,9 @@ public final class SingleUserPushTask implements PushTask, ChannelFutureListener
         LocalRouter localRouter = mPushServer.getRouterCenter().getLocalRouterManager().lookup(userId, clientType);
 
         //1.如果本机不存在，再查下远程，看用户是否登陆到其他机器
-        if (localRouter == null) return false;
+        if (localRouter == null) {
+            return false;
+        }
 
         Connection connection = localRouter.getRouteValue();
 
@@ -203,7 +209,9 @@ public final class SingleUserPushTask implements PushTask, ChannelFutureListener
 
     @Override
     public void operationComplete(ChannelFuture future) throws Exception {
-        if (checkTimeout()) return;
+        if (checkTimeout()) {
+            return;
+        }
 
         if (future.isSuccess()) {//推送成功
 

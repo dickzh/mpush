@@ -51,11 +51,15 @@ public class ConfigCenterTest {
     public static void print(String s, ConfigValue configValue, Map<String, String> map) {
         if (s.startsWith("mp") && !s.endsWith("\"")) {
             String[] keys = s.split("\\.");
-            if (keys.length >= 4) return;
+            if (keys.length >= 4) {
+                return;
+            }
             for (int i = keys.length - 1; i > 0; i--) {
                 String key = keys[i];
                 String value = map.get(key);
-                if (value != null) continue;
+                if (value != null) {
+                    continue;
+                }
                 String p = keys[i - 1];
                 map.put(key, p + "." + key.replace('-', '_') + "(" + p + ")");
             }

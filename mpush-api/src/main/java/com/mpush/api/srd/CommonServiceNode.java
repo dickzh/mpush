@@ -59,7 +59,9 @@ public final class CommonServiceNode implements ServiceNode {
     }
 
     public CommonServiceNode addAttr(String name, Object value) {
-        if (attrs == null) attrs = new HashMap<>();
+        if (attrs == null) {
+            attrs = new HashMap<>();
+        }
         attrs.put(name, value);
         return this;
     }

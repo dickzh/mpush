@@ -34,6 +34,7 @@ public class Constants {
     public final static String EMPTY_STRING = "";
     public final static String ANY_HOST = "0.0.0.0";
     public final static String KICK_CHANNEL_PREFIX = "/mpush/kick/";
+    public final static String GROUP_CHANNEL = "/mpush/group/";
     public final static String ONLINE_CHANNEL = "/mpush/online/";
     public final static String OFFLINE_CHANNEL = "/mpush/offline/";
 

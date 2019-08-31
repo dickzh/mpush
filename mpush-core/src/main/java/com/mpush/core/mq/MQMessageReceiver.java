@@ -22,7 +22,6 @@ package com.mpush.core.mq;
 import com.mpush.core.push.PushCenter;
 import com.mpush.tools.Utils;
 import com.mpush.tools.config.ConfigTools;
-import com.mpush.monitor.service.ThreadPoolManager;
 
 import java.util.Collection;
 

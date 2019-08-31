@@ -85,7 +85,7 @@ public final class ConnectionServer extends NettyTCPServer {
         messageDispatcher.register(Command.ACK, () -> new AckHandler(mPushServer));
         messageDispatcher.register(Command.HTTP_PROXY, () -> new HttpProxyHandler(mPushServer), IConfig.mp.http.proxy_enabled);
 
-        if (IConfig.mp.net.traffic_shaping.connect_server.enabled) {//启用流量整形，限流
+        if (enabled) {//启用流量整形，限流
             trafficShapingExecutor = Executors.newSingleThreadScheduledExecutor(new NamedPoolThreadFactory(T_TRAFFIC_SHAPING));
             trafficShapingHandler = new GlobalChannelTrafficShapingHandler(
                     trafficShapingExecutor,
@@ -147,8 +147,12 @@ public final class ConnectionServer extends NettyTCPServer {
          * 在Netty中分别对应ChannelOption的SO_SNDBUF和SO_RCVBUF，
          * 需要根据推送消息的大小，合理设置，对于海量长连接，通常32K是个不错的选择。
          */
-        if (snd_buf.connect_server > 0) b.childOption(ChannelOption.SO_SNDBUF, snd_buf.connect_server);
-        if (rcv_buf.connect_server > 0) b.childOption(ChannelOption.SO_RCVBUF, rcv_buf.connect_server);
+        if (snd_buf.connect_server > 0) {
+            b.childOption(ChannelOption.SO_SNDBUF, snd_buf.connect_server);
+        }
+        if (rcv_buf.connect_server > 0) {
+            b.childOption(ChannelOption.SO_RCVBUF, rcv_buf.connect_server);
+        }
 
         /**
          * 这个坑其实也不算坑，只是因为懒，该做的事情没做。一般来讲我们的业务如果比较小的时候我们用同步处理，等业务到一定规模的时候，一个优化手段就是异步化。

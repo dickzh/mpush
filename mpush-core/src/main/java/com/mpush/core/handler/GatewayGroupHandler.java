@@ -19,43 +19,33 @@
 
 package com.mpush.core.handler;
 
-
 import com.mpush.api.connection.Connection;
-import com.mpush.api.message.MessageHandler;
 import com.mpush.api.protocol.Packet;
-import com.mpush.api.spi.Spi;
-import com.mpush.api.spi.handler.PushHandlerFactory;
 import com.mpush.common.handler.BaseMessageHandler;
-import com.mpush.common.message.AckMessage;
-import com.mpush.common.message.PushMessage;
-import com.mpush.tools.log.Logs;
+import com.mpush.common.message.gateway.GatewayGroupMessage;
+import com.mpush.core.router.RouterCenter;
 
 /**
- * Created by ohun on 2015/12/30.
+ * Created by ohun on 16/10/23.
  *
  * @author ohun@live.cn (夜色)
  */
-@Spi(order = 1)
-public final class ClientPushHandler extends BaseMessageHandler<PushMessage> implements PushHandlerFactory {
+public final class GatewayGroupHandler extends BaseMessageHandler<GatewayGroupMessage> {
 
-    @Override
-    public PushMessage decode(Packet packet, Connection connection) {
-        return new PushMessage(packet, connection);
+    private final RouterCenter routerCenter;
+
+    public GatewayGroupHandler(RouterCenter routerCenter) {
+        this.routerCenter = routerCenter;
     }
 
     @Override
-    public void handle(PushMessage message) {
-        Logs.PUSH.info("receive client push message={}", message);
-
-        if (message.autoAck()) {
-            AckMessage.from(message).sendRaw();
-            Logs.PUSH.info("send ack for push message={}", message);
-        }
-        //biz code write here
+    public GatewayGroupMessage decode(Packet packet, Connection connection) {
+        return new GatewayGroupMessage(packet, connection);
     }
 
     @Override
-    public MessageHandler get() {
-        return this;
+    public void handle(GatewayGroupMessage message) {
+        // TODO
+//        routerCenter.getRouterChangeListener().onReceiveGroupRemoteMsg(message);
     }
 }

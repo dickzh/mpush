@@ -45,7 +45,9 @@ public final class ReusableSessionManager {
     public ReusableSession querySession(String sessionId) {
         String key = CacheKeys.getSessionKey(sessionId);
         String value = cacheManager.get(key, String.class);
-        if (Strings.isBlank(value)) return null;
+        if (Strings.isBlank(value)) {
+            return null;
+        }
         return ReusableSession.decode(value);
     }
 

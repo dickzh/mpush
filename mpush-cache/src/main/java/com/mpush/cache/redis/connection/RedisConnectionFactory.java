@@ -123,7 +123,7 @@ public class RedisConnectionFactory {
             if (redisClient == null) {
                 List<RedisURI> nodeList = new ArrayList<>();
                 for (RedisNode node : redisServers) {
-                    RedisURI.Builder builder = RedisURI.builder().redis(node.getHost(), node.getPort());
+                    RedisURI.Builder builder = RedisURI.Builder.redis(node.getHost(), node.getPort());
 
                     builder = builderOptions(builder);
                     nodeList.add(builder.build());
@@ -136,7 +136,7 @@ public class RedisConnectionFactory {
 
         } else {
             if (redisClient == null) {
-                RedisURI.Builder builder = RedisURI.builder().redis(hostName, port);
+                RedisURI.Builder builder = RedisURI.Builder.redis(hostName, port);
 
                 builder =  builderOptions(builder);
                 redisClient = RedisClient.create(builder.build());
@@ -179,7 +179,7 @@ public class RedisConnectionFactory {
         if(redisClient == null) {
             List<RedisURI> nodeList = new ArrayList<>();
             for (RedisNode node : redisServers) {
-                RedisURI.Builder builder = RedisURI.builder().redis(node.getHost(), node.getPort());
+                RedisURI.Builder builder = RedisURI.Builder.redis(node.getHost(), node.getPort());
 
                 builder =  builderOptions(builder);
                 nodeList.add(builder.build());
@@ -213,7 +213,7 @@ public class RedisConnectionFactory {
      */
     protected GenericObjectPool<StatefulConnection<String, String>> createRedisPool() {
         if (redisClient == null) {
-            RedisURI.Builder builder = RedisURI.builder().redis(hostName, port);
+            RedisURI.Builder builder = RedisURI.Builder.redis(hostName, port);
 
             builder =  builderOptions(builder);
             redisClient = RedisClient.create(builder.build());

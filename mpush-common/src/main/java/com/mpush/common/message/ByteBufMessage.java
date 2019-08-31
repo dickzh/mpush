@@ -86,13 +86,17 @@ public abstract class ByteBufMessage extends BaseMessage {
 
     public String decodeString(ByteBuf body) {
         byte[] bytes = decodeBytes(body);
-        if (bytes == null) return null;
+        if (bytes == null) {
+            return null;
+        }
         return new String(bytes, Constants.UTF_8);
     }
 
     public byte[] decodeBytes(ByteBuf body) {
         int fieldLength = body.readShort();
-        if (fieldLength == 0) return null;
+        if (fieldLength == 0) {
+            return null;
+        }
         if (fieldLength == Short.MAX_VALUE) {
             fieldLength += body.readInt();
         }

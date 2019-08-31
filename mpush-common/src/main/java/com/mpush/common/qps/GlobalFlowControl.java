@@ -64,7 +64,9 @@ public final class GlobalFlowControl implements FlowControl {
             return true;
         }
 
-        if (maxLimit > 0 && total.get() > maxLimit) throw new OverFlowException(true);
+        if (maxLimit > 0 && total.get() > maxLimit) {
+            throw new OverFlowException(true);
+        }
 
         if (System.nanoTime() - start > duration) {
             reset();

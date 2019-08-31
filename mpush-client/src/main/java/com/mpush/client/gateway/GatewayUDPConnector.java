@@ -26,10 +26,9 @@ import com.mpush.client.MPushClient;
 import com.mpush.client.gateway.handler.GatewayErrorHandler;
 import com.mpush.client.gateway.handler.GatewayOKHandler;
 import com.mpush.common.MessageDispatcher;
-import com.mpush.netty.udp.UDPChannelHandler;
 import com.mpush.netty.udp.NettyUDPConnector;
+import com.mpush.netty.udp.UDPChannelHandler;
 import com.mpush.tools.Utils;
-import com.mpush.tools.config.IConfig;
 import com.mpush.tools.config.IConfig.mp.net.rcv_buf;
 import com.mpush.tools.config.IConfig.mp.net.snd_buf;
 import io.netty.bootstrap.Bootstrap;
@@ -37,6 +36,8 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelOption;
 
 import static com.mpush.common.MessageDispatcher.POLICY_LOG;
+import static com.mpush.tools.config.IConfig.mp.net.gateway_client_multicast;
+import static com.mpush.tools.config.IConfig.mp.net.gateway_client_port;
 
 /**
  * Created by ohun on 2015/12/30.
@@ -50,7 +51,7 @@ public final class GatewayUDPConnector extends NettyUDPConnector {
     private MPushClient mPushClient;
 
     public GatewayUDPConnector(MPushClient mPushClient) {
-        super(IConfig.mp.net.gateway_client_port);
+        super(gateway_client_port);
         this.mPushClient = mPushClient;
         this.messageDispatcher = new MessageDispatcher(POLICY_LOG);
     }
@@ -61,7 +62,7 @@ public final class GatewayUDPConnector extends NettyUDPConnector {
         messageDispatcher.register(Command.OK, () -> new GatewayOKHandler(mPushClient));
         messageDispatcher.register(Command.ERROR, () -> new GatewayErrorHandler(mPushClient));
         channelHandler = new UDPChannelHandler(messageDispatcher);
-        channelHandler.setMulticastAddress(Utils.getInetAddress(IConfig.mp.net.gateway_client_multicast));
+        channelHandler.setMulticastAddress(Utils.getInetAddress(gateway_client_multicast));
         channelHandler.setNetworkInterface(Utils.getLocalNetworkInterface());
     }
 
@@ -77,8 +78,12 @@ public final class GatewayUDPConnector extends NettyUDPConnector {
         super.initOptions(b);
         b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, true);
         b.option(ChannelOption.IP_MULTICAST_TTL, 255);
-        if (snd_buf.gateway_client > 0) b.option(ChannelOption.SO_SNDBUF, snd_buf.gateway_client);
-        if (rcv_buf.gateway_client > 0) b.option(ChannelOption.SO_RCVBUF, rcv_buf.gateway_client);
+        if (snd_buf.gateway_client > 0) {
+            b.option(ChannelOption.SO_SNDBUF, snd_buf.gateway_client);
+        }
+        if (rcv_buf.gateway_client > 0) {
+            b.option(ChannelOption.SO_RCVBUF, rcv_buf.gateway_client);
+        }
     }
 
     @Override

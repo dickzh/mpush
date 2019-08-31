@@ -19,10 +19,6 @@
 
 package com.mpush.common.router;
 
-import com.mpush.common.ServerNodes;
-import com.mpush.tools.config.ConfigTools;
-
-
 /**
  * Created by ohun on 16/10/23.
  *

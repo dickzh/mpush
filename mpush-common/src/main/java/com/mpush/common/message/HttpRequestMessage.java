@@ -73,6 +73,8 @@ public final class HttpRequestMessage extends ByteBufMessage {
                 return "PUT";
             case 3:
                 return "DELETE";
+            default:
+                break;
         }
         return "GET";
     }

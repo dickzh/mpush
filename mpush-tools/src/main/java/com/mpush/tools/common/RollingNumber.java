@@ -142,8 +142,9 @@ public class RollingNumber {
      */
     public long getRollingSum(Event type) {
         Bucket lastBucket = getCurrentBucket();
-        if (lastBucket == null)
+        if (lastBucket == null) {
             return 0;
+        }
 
         long sum = 0;
         for (Bucket b : buckets) {
@@ -164,8 +165,9 @@ public class RollingNumber {
      */
     public long getValueOfLatestBucket(Event type) {
         Bucket lastBucket = getCurrentBucket();
-        if (lastBucket == null)
+        if (lastBucket == null) {
             return 0;
+        }
         // we have bucket data so we'll return the lastBucket
         return lastBucket.get(type);
     }
@@ -183,8 +185,9 @@ public class RollingNumber {
      */
     public long[] getValues(Event type) {
         Bucket lastBucket = getCurrentBucket();
-        if (lastBucket == null)
+        if (lastBucket == null) {
             return new long[0];
+        }
 
         // get buckets as an array (which is a copy of the current state at this point in time)
         Bucket[] bucketArray = buckets.getArray();
@@ -556,6 +559,7 @@ public class RollingNumber {
         /**
          * Returns an iterator on a copy of the internal array so that the iterator won't fail by buckets being added/removed concurrently.
          */
+        @Override
         public Iterator<Bucket> iterator() {
             return Collections.unmodifiableList(Arrays.asList(getArray())).iterator();
         }

@@ -19,10 +19,10 @@
 
 package com.mpush.core.push;
 
-import com.mpush.api.message.Message;
 import com.mpush.api.common.Condition;
 import com.mpush.api.connection.Connection;
 import com.mpush.api.connection.SessionContext;
+import com.mpush.api.message.Message;
 import com.mpush.api.spi.push.IPushMessage;
 import com.mpush.common.condition.AwaysPassCondition;
 import com.mpush.common.message.PushMessage;
@@ -131,7 +131,9 @@ public final class BroadcastPushTask implements PushTask {
     }
 
     private boolean checkCondition(Condition condition, Connection connection) {
-        if (condition == AwaysPassCondition.instance) return true;
+        if (condition == AwaysPassCondition.instance) {
+            return true;
+        }
         SessionContext sessionContext = connection.getSessionContext();
         Map<String, Object> env = new HashMap<>();
         env.put("userId", sessionContext.userId);

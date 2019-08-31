@@ -80,18 +80,22 @@ public final class Jsons {
     }
 
     public static boolean mayJson(String json) {
-        if (Strings.isBlank(json))
+        if (Strings.isBlank(json)) {
             return false;
-        if (json.charAt(0) == '{' && json.charAt(json.length() - 1) == '}')
+        }
+        if (json.charAt(0) == '{' && json.charAt(json.length() - 1) == '}') {
             return true;
-        if (json.charAt(0) == '[' && json.charAt(json.length() - 1) == ']')
+        }
+        if (json.charAt(0) == '[' && json.charAt(json.length() - 1) == ']') {
             return true;
+        }
         return false;
     }
 
     public static String toJson(Map<String, String> map) {
-        if (map == null || map.isEmpty())
+        if (map == null || map.isEmpty()) {
             return "{}";
+        }
         StringBuilder sb = new StringBuilder(64 * map.size());
         sb.append('{');
         Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
@@ -108,8 +112,9 @@ public final class Jsons {
 
     private static void append(Map.Entry<String, String> entry, StringBuilder sb) {
         String key = entry.getKey(), value = entry.getValue();
-        if (value == null)
+        if (value == null) {
             value = Strings.EMPTY;
+        }
         sb.append('"').append(key).append('"');
         sb.append(':');
         sb.append('"').append(value).append('"');

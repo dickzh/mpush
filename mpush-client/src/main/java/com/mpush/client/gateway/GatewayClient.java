@@ -29,9 +29,7 @@ import com.mpush.client.gateway.handler.GatewayOKHandler;
 import com.mpush.common.MessageDispatcher;
 import com.mpush.netty.client.NettyTCPClient;
 import com.mpush.netty.connection.NettyConnectionManager;
-import com.mpush.tools.config.IConfig;
-import com.mpush.tools.config.IConfig.mp.net.rcv_buf;
-import com.mpush.tools.config.IConfig.mp.net.snd_buf;
+import com.mpush.tools.config.IConfig.mp.net.*;
 import com.mpush.tools.thread.NamedPoolThreadFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -43,7 +41,9 @@ import java.nio.channels.spi.SelectorProvider;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import static com.mpush.tools.config.IConfig.mp.net.*;
 import static com.mpush.tools.config.IConfig.mp.net.traffic_shaping.gateway_client.*;
+import static com.mpush.tools.config.IConfig.mp.thread.pool.gateway_client_work;
 import static com.mpush.tools.thread.ThreadNames.T_TRAFFIC_SHAPING;
 
 /**
@@ -99,29 +99,45 @@ public class GatewayClient extends NettyTCPClient {
     @Override
     protected void initOptions(Bootstrap b) {
         super.initOptions(b);
-        if (snd_buf.gateway_client > 0) b.option(ChannelOption.SO_SNDBUF, snd_buf.gateway_client);
-        if (rcv_buf.gateway_client > 0) b.option(ChannelOption.SO_RCVBUF, rcv_buf.gateway_client);
+        if (snd_buf.gateway_client > 0) {
+            b.option(ChannelOption.SO_SNDBUF, snd_buf.gateway_client);
+        }
+        if (rcv_buf.gateway_client > 0) {
+            b.option(ChannelOption.SO_RCVBUF, rcv_buf.gateway_client);
+        }
     }
 
     @Override
     public ChannelFactory<? extends Channel> getChannelFactory() {
-        if (IConfig.mp.net.tcpGateway()) return super.getChannelFactory();
-        if (IConfig.mp.net.udtGateway()) return NioUdtProvider.BYTE_CONNECTOR;
-        if (IConfig.mp.net.sctpGateway()) return NioSctpChannel::new;
+        if (tcpGateway()) {
+            return super.getChannelFactory();
+        }
+        if (udtGateway()) {
+            return NioUdtProvider.BYTE_CONNECTOR;
+        }
+        if (sctpGateway()) {
+            return NioSctpChannel::new;
+        }
         return super.getChannelFactory();
     }
 
     @Override
     public SelectorProvider getSelectorProvider() {
-        if (IConfig.mp.net.tcpGateway()) return super.getSelectorProvider();
-        if (IConfig.mp.net.udtGateway()) return NioUdtProvider.BYTE_PROVIDER;
-        if (IConfig.mp.net.sctpGateway()) return super.getSelectorProvider();
+        if (tcpGateway()) {
+            return super.getSelectorProvider();
+        }
+        if (udtGateway()) {
+            return NioUdtProvider.BYTE_PROVIDER;
+        }
+        if (sctpGateway()) {
+            return super.getSelectorProvider();
+        }
         return super.getSelectorProvider();
     }
 
     @Override
     protected int getWorkThreadNum() {
-        return IConfig.mp.thread.pool.gateway_client_work;
+        return gateway_client_work;
     }
 
     public ConnectionManager getConnectionManager() {

@@ -17,26 +17,32 @@
  *   ohun@live.cn (夜色)
  */
 
-package com.mpush.api.connection;
-
-import io.netty.channel.Channel;
+package com.mpush.api.protocol;
 
 /**
- * Created by ohun on 2015/12/30.
+ * Created by ohun on 2015/12/22.
  *
- * @author ohun@live.cn (夜色)
+ * @author ohun@live.cn
  */
-public interface ConnectionManager {
+public enum GroupCmdType {
+    CREATE(1),
+    JOIN(2),
+    LEFT(3),
+    KICK(4),
+    DESTROY(5),
+    UNKNOWN(-1);
 
-    Connection get(Channel channel);
+    GroupCmdType(int type) {
+        this.type = (byte) type;
+    }
 
-    Connection removeAndClose(Channel channel);
+    public final byte type;
 
-    void add(Connection connection);
-
-    int getConnNum();
-
-    void init();
-
-    void destroy();
+    public static GroupCmdType toType(byte b) {
+        GroupCmdType[] values = values();
+        if (b > 0 && b < values.length) {
+            return values[b - 1];
+        }
+        return UNKNOWN;
+    }
 }

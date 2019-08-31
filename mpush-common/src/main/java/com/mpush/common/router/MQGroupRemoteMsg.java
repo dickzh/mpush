@@ -1,0 +1,130 @@
+/*
+ * (C) Copyright 2015-2016 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     ohun@live.cn (夜色)
+ */
+
+package com.mpush.common.router;
+
+/**
+ * Created by ohun on 16/10/23.
+ *
+ * @author ohun@live.cn (夜色)
+ */
+public class MQGroupRemoteMsg implements GroupRemoteMsg {
+    private String userId;
+    private String deviceId;
+    private String groupId;
+    private String msgType;
+    private String connId;
+    private int clientType;
+    private String targetServer;
+    private int targetPort;
+
+    public MQGroupRemoteMsg setUserId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public MQGroupRemoteMsg setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+        return this;
+    }
+
+    public MQGroupRemoteMsg setGroupId(String groupId) {
+        this.groupId = groupId;
+        return this;
+    }
+
+    public MQGroupRemoteMsg setMsgType(String msgType) {
+        this.msgType = msgType;
+        return this;
+    }
+
+    public MQGroupRemoteMsg setConnId(String connId) {
+        this.connId = connId;
+        return this;
+    }
+
+    public MQGroupRemoteMsg setClientType(int clientType) {
+        this.clientType = clientType;
+        return this;
+    }
+
+    public MQGroupRemoteMsg setTargetServer(String targetServer) {
+        this.targetServer = targetServer;
+        return this;
+    }
+
+    public MQGroupRemoteMsg setTargetPort(int targetPort) {
+        this.targetPort = targetPort;
+        return this;
+    }
+
+    @Override
+    public String getUserId() {
+        return userId;
+    }
+
+    @Override
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    @Override
+    public String getGroupId() {
+        return groupId;
+    }
+
+    @Override
+    public String getMsgType() {
+        return msgType;
+    }
+
+    @Override
+    public String getConnId() {
+        return connId;
+    }
+
+    @Override
+    public int getClientType() {
+        return clientType;
+    }
+
+    @Override
+    public String getTargetServer() {
+        return targetServer;
+    }
+
+    @Override
+    public int getTargetPort() {
+        return targetPort;
+    }
+
+    @Override
+    public String toString() {
+        return "groupRemoteMsg{"
+                + "userId='" + userId + '\''
+                + ", deviceId='" + deviceId + '\''
+                + ", groupId='" + groupId + '\''
+                + ", msgType='" + msgType + '\''
+                + ", connId='" + connId + '\''
+                + ", clientType='" + clientType + '\''
+                + ", targetServer='" + targetServer + '\''
+                + ", targetPort=" + targetPort
+                + '}';
+    }
+}

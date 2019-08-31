@@ -21,7 +21,9 @@ package com.mpush.common.condition;
 
 import com.mpush.api.common.Condition;
 
-import javax.script.*;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
 import java.util.Map;
 
 /**

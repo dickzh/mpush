@@ -24,8 +24,8 @@ import com.mpush.common.router.RemoteRouter;
 import com.mpush.core.MPushServer;
 import com.mpush.tools.Jsons;
 import com.mpush.tools.common.Profiler;
-import com.mpush.tools.config.IConfig;
 import com.mpush.tools.config.ConfigTools;
+import com.mpush.tools.config.IConfig;
 import com.typesafe.config.ConfigRenderOptions;
 import io.netty.channel.*;
 import org.slf4j.Logger;
@@ -94,9 +94,13 @@ public final class AdminHandler extends SimpleChannelInboundHandler<String> {
         });
 
         register("route", (ctx, args) -> {
-            if (Strings.isNullOrEmpty(args)) return "please input userId";
+            if (Strings.isNullOrEmpty(args)) {
+                return "please input userId";
+            }
             Set<RemoteRouter> routers = mPushServer.getRouterCenter().getRemoteRouterManager().lookupAll(args);
-            if (routers.isEmpty()) return "user [" + args + "] offline now.";
+            if (routers.isEmpty()) {
+                return "user [" + args + "] offline now.";
+            }
             return Jsons.toJson(routers);
         });
 
@@ -144,7 +148,7 @@ public final class AdminHandler extends SimpleChannelInboundHandler<String> {
         try {
             Object result = optionHandlers.getOrDefault(option, unsupported_handler).handle(ctx, arg);
             ChannelFuture future = ctx.writeAndFlush(result + EOL + EOL);
-            if (option.equals("quit")) {
+            if ("quit".equals(option)) {
                 future.addListener(ChannelFutureListener.CLOSE);
             }
         } catch (Throwable throwable) {

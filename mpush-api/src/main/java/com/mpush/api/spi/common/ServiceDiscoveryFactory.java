@@ -22,7 +22,6 @@ package com.mpush.api.spi.common;
 import com.mpush.api.spi.Factory;
 import com.mpush.api.spi.SpiLoader;
 import com.mpush.api.srd.ServiceDiscovery;
-import com.mpush.api.srd.ServiceRegistry;
 
 /**
  * Created by ohun on 2016/12/27.

@@ -20,11 +20,10 @@
 package com.mpush.cache.redis.manager;
 
 import com.google.common.collect.Lists;
-import com.mpush.api.spi.common.*;
+import com.mpush.api.spi.common.CacheManager;
 import com.mpush.cache.redis.connection.RedisConnectionFactory;
 import com.mpush.tools.Jsons;
 import com.mpush.tools.Utils;
-import com.mpush.tools.config.IConfig;
 import com.mpush.tools.log.Logs;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanCursor;
@@ -45,6 +44,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.mpush.tools.config.IConfig.mp.redis.*;
+
 /**
  * redis 对外封装接口
  */
@@ -53,15 +54,16 @@ public final class RedisManager implements CacheManager {
 
     private final RedisConnectionFactory factory = new RedisConnectionFactory();
 
+    @Override
     public void init() {
         Logs.CACHE.info("begin init redis...");
-        factory.setPassword(IConfig.mp.redis.password);
-        factory.setPoolConfig(IConfig.mp.redis.getPoolConfig(GenericObjectPoolConfig.class));
-        factory.setRedisServers(IConfig.mp.redis.nodes);
-        factory.setCluster(IConfig.mp.redis.isCluster());
-        if (IConfig.mp.redis.isSentinel()) {
+        factory.setPassword(password);
+        factory.setPoolConfig(getPoolConfig(GenericObjectPoolConfig.class));
+        factory.setRedisServers(nodes);
+        factory.setCluster(isCluster());
+        if (isSentinel()) {
             factory.setSentinel(true);
-            factory.setSentinelMaster(IConfig.mp.redis.sentinelMaster);
+            factory.setSentinelMaster(sentinelMaster);
         }
         factory.init();
         test();
@@ -210,6 +212,7 @@ public final class RedisManager implements CacheManager {
      * @param clazz
      * @return
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T get(String key, Class<T> clazz) {
         String value;
@@ -219,11 +222,16 @@ public final class RedisManager implements CacheManager {
             value = call(command -> command.get(key), null);
         }
 
-        if (value == null) return null;
-        if (clazz == String.class) return (T) value;
+        if (value == null) {
+            return null;
+        }
+        if (clazz == String.class) {
+            return (T) value;
+        }
         return Jsons.fromJson(value, clazz);
     }
 
+    @Override
     public void set(String key, String value) {
         set(key, value, 0);
     }
@@ -232,6 +240,7 @@ public final class RedisManager implements CacheManager {
         set(key, value, 0);
     }
 
+    @Override
     public void set(String key, Object value, int time) {
         set(key, Jsons.toJson(value), time);
     }
@@ -241,6 +250,7 @@ public final class RedisManager implements CacheManager {
      * @param value
      * @param time  seconds
      */
+    @Override
     public void set(String key, String value, int time) {
 
         if (factory.isCluster()) {
@@ -260,6 +270,7 @@ public final class RedisManager implements CacheManager {
         }
     }
 
+    @Override
     public void del(String key) {
         if (factory.isCluster()) {
             callCluster(command -> command.del(key));
@@ -273,6 +284,7 @@ public final class RedisManager implements CacheManager {
     /*********************
      * hash redis start
      ********************************/
+    @Override
     public void hset(String key, String field, String value) {
         if (factory.isCluster()) {
             callCluster(command -> command.hset(key, field, value));
@@ -281,10 +293,12 @@ public final class RedisManager implements CacheManager {
         }
     }
 
+    @Override
     public void hset(String key, String field, Object value) {
         hset(key, field, Jsons.toJson(value));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T hget(String key, String field, Class<T> clazz) {
         String value;
@@ -294,11 +308,16 @@ public final class RedisManager implements CacheManager {
             value = call(command -> command.hget(key, field), null);
         }
 
-        if (value == null) return null;
-        if (clazz == String.class) return (T) value;
+        if (value == null) {
+            return null;
+        }
+        if (clazz == String.class) {
+            return (T) value;
+        }
         return Jsons.fromJson(value, clazz);
     }
 
+    @Override
     public void hdel(String key, String field) {
         if (factory.isCluster()) {
             callCluster(command -> command.hdel(key, field));
@@ -315,9 +334,12 @@ public final class RedisManager implements CacheManager {
         }
     }
 
+    @Override
     public <T> Map<String, T> hgetAll(String key, Class<T> clazz) {
         Map<String, String> result = hgetAll(key);
-        if (result.isEmpty()) return Collections.emptyMap();
+        if (result.isEmpty()) {
+            return Collections.emptyMap();
+        }
         Map<String, T> newMap = new HashMap<>(result.size());
         result.forEach((k, v) -> newMap.put(k, Jsons.fromJson(v, clazz)));
         return newMap;
@@ -388,6 +410,7 @@ public final class RedisManager implements CacheManager {
         hmset(key, hash, 0);
     }
 
+    @Override
     public long hincrBy(String key, String field, long value) {
         if (factory.isCluster()) {
             return callCluster(command -> command.hincrby(key, field, value), 0L);
@@ -402,6 +425,7 @@ public final class RedisManager implements CacheManager {
     /**
      * 从队列的左边入队
      */
+    @Override
     public void lpush(String key, String... value) {
         if (factory.isCluster()) {
             callCluster(command -> command.lpush(key, value));
@@ -441,8 +465,12 @@ public final class RedisManager implements CacheManager {
         } else {
             value = call(command -> command.lpop(key), null);
         }
-        if (value == null) return null;
-        if (clazz == String.class) return (T) value;
+        if (value == null) {
+            return null;
+        }
+        if (clazz == String.class) {
+            return (T) value;
+        }
         return Jsons.fromJson(value, clazz);
     }
 
@@ -457,8 +485,12 @@ public final class RedisManager implements CacheManager {
         } else {
             value = call(command -> command.rpop(key), null);
         }
-        if (value == null) return null;
-        if (clazz == String.class) return (T) value;
+        if (value == null) {
+            return null;
+        }
+        if (clazz == String.class) {
+            return (T) value;
+        }
         return Jsons.fromJson(value, clazz);
     }
 
@@ -467,6 +499,7 @@ public final class RedisManager implements CacheManager {
      * 偏移量都是基于0的下标，即list的第一个元素下标是0（list的表头），第二个元素下标是1，以此类推。
      * 偏移量也可以是负数，表示偏移量是从list尾部开始计数。 例如， -1 表示列表的最后一个元素，-2 是倒数第二个，以此类推。
      */
+    @Override
     public <T> List<T> lrange(String key, int start, int end, Class<T> clazz) {
         if (factory.isCluster()) {
             return callCluster(command -> command.lrange(key, start, end), Collections.<String>emptyList())
@@ -601,6 +634,7 @@ public final class RedisManager implements CacheManager {
      * @param key
      * @param value
      */
+    @Override
     public void zAdd(String key, String value) {
         if (factory.isCluster()) {
             callCluster(command -> command.zadd(key, 0, value));
@@ -613,6 +647,7 @@ public final class RedisManager implements CacheManager {
      * @param key
      * @return
      */
+    @Override
     public Long zCard(String key) {
         if (factory.isCluster()) {
             return callCluster(command -> command.zcard(key), 0L);
@@ -621,6 +656,7 @@ public final class RedisManager implements CacheManager {
         }
     }
 
+    @Override
     public void zRem(String key, String value) {
         if (factory.isCluster()) {
             callCluster(command -> command.zrem(key, value));
@@ -634,6 +670,7 @@ public final class RedisManager implements CacheManager {
      * 偏移量都是基于0的下标，即list的第一个元素下标是0（list的表头），第二个元素下标是1，以此类推。
      * 偏移量也可以是负数，表示偏移量是从list尾部开始计数。 例如， -1 表示列表的最后一个元素，-2 是倒数第二个，以此类推。
      */
+    @Override
     public <T> List<T> zrange(String key, int start, int end, Class<T> clazz) {
         List<String> value;
 
@@ -660,18 +697,25 @@ public final class RedisManager implements CacheManager {
         return null;
     }
 
+    @Override
     public void destroy() {
-        if (factory != null) factory.destroy();
+        if (factory != null) {
+            factory.destroy();
+        }
     }
 
     public void test() {
         if (factory.isCluster()) {
             StatefulConnection cluster = factory.getClusterConnection();
-            if (cluster == null) throw new RuntimeException("init redis cluster error.");
+            if (cluster == null) {
+                throw new RuntimeException("init redis cluster error.");
+            }
             cluster.close();
         } else {
             StatefulConnection command = factory.getRedisConnection();
-            if (command == null) throw new RuntimeException("init redis error, can not get connection.");
+            if (command == null) {
+                throw new RuntimeException("init redis error, can not get connection.");
+            }
             command.close();
         }
     }

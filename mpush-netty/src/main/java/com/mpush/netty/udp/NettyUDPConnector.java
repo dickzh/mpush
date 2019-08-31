@@ -63,7 +63,9 @@ public abstract class NettyUDPConnector extends BaseService implements Server {
     @Override
     protected void doStop(Listener listener) throws Throwable {
         logger.info("try shutdown {}...", this.getClass().getSimpleName());
-        if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully().syncUninterruptibly();
+        if (eventLoopGroup != null) {
+            eventLoopGroup.shutdownGracefully().syncUninterruptibly();
+        }
         logger.info("{} shutdown success.", this.getClass().getSimpleName());
         listener.onSuccess(port);
     }
@@ -83,15 +85,21 @@ public abstract class NettyUDPConnector extends BaseService implements Server {
             b.bind(port).addListener(future -> {
                 if (future.isSuccess()) {
                     logger.info("udp server start success on:{}", port);
-                    if (listener != null) listener.onSuccess(port);
+                    if (listener != null) {
+                        listener.onSuccess(port);
+                    }
                 } else {
                     logger.error("udp server start failure on:{}", port, future.cause());
-                    if (listener != null) listener.onFailure(future.cause());
+                    if (listener != null) {
+                        listener.onFailure(future.cause());
+                    }
                 }
             });
         } catch (Exception e) {
             logger.error("udp server start exception", e);
-            if (listener != null) listener.onFailure(e);
+            if (listener != null) {
+                listener.onFailure(e);
+            }
             throw new ServiceException("udp server start exception, port=" + port, e);
         }
     }

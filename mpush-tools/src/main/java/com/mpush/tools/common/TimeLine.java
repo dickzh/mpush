@@ -18,9 +18,6 @@
   */
 package com.mpush.tools.common;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Created by yxx on 2016/5/26.
  *
@@ -138,7 +135,9 @@ public final class TimeLine {
 
         @Override
         public String toString() {
-            if (next == null) return name;
+            if (next == null) {
+                return name;
+            }
             return name + " --（" + (next.time - time) + "ms) --> ";
         }
     }

@@ -20,8 +20,6 @@
 package com.mpush.bootstrap.job;
 
 import com.mpush.api.spi.common.CacheManagerFactory;
-import com.mpush.common.user.UserManager;
-import com.mpush.core.MPushServer;
 
 /**
  * Created by yxx on 2016/5/14.

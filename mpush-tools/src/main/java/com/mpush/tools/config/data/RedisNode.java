@@ -62,12 +62,18 @@ public class RedisNode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         RedisNode server = (RedisNode) o;
 
-        if (port != server.port) return false;
+        if (port != server.port) {
+            return false;
+        }
         return host.equals(server.host);
 
     }

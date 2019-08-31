@@ -40,7 +40,9 @@ public final class CachedRemoteRouterManager extends RemoteRouterManager {
     @Override
     public Set<RemoteRouter> lookupAll(String userId) {
         Set<RemoteRouter> cached = cache.getIfPresent(userId);
-        if (cached != null) return cached;
+        if (cached != null) {
+            return cached;
+        }
         Set<RemoteRouter> remoteRouters = super.lookupAll(userId);
         if (remoteRouters != null) {
             cache.put(userId, remoteRouters);
@@ -67,6 +69,8 @@ public final class CachedRemoteRouterManager extends RemoteRouterManager {
      * @param userId
      */
     public void invalidateLocalCache(String userId) {
-        if (userId != null) cache.invalidate(userId);
+        if (userId != null) {
+            cache.invalidate(userId);
+        }
     }
 }

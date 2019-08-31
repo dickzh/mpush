@@ -23,7 +23,6 @@ package com.mpush.core.server;
 import com.mpush.api.connection.Connection;
 import com.mpush.api.connection.ConnectionManager;
 import com.mpush.netty.connection.NettyConnection;
-import com.mpush.tools.config.IConfig;
 import com.mpush.tools.log.Logs;
 import com.mpush.tools.thread.NamedThreadFactory;
 import com.mpush.tools.thread.ThreadNames;
@@ -36,6 +35,9 @@ import io.netty.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+
+import static com.mpush.tools.config.IConfig.mp.core.max_hb_timeout_times;
+import static com.mpush.tools.config.IConfig.mp.core.max_heartbeat;
 
 
 /**
@@ -59,7 +61,7 @@ public final class ServerConnectionManager implements ConnectionManager {
     public void init() {
         if (heartbeatCheck) {
             long tickDuration = TimeUnit.SECONDS.toMillis(1);//1s 每秒钟走一步，一个心跳周期内大致走一圈
-            int ticksPerWheel = (int) (IConfig.mp.core.max_heartbeat / tickDuration);
+            int ticksPerWheel = (int) (max_heartbeat / tickDuration);
             this.timer = new HashedWheelTimer(
                     new NamedThreadFactory(ThreadNames.T_CONN_TIMER),
                     tickDuration, TimeUnit.MILLISECONDS, ticksPerWheel
@@ -163,7 +165,7 @@ public final class ServerConnectionManager implements ConnectionManager {
             }
 
             if (connection.isReadTimeout()) {
-                if (++timeoutTimes > IConfig.mp.core.max_hb_timeout_times) {
+                if (++timeoutTimes > max_hb_timeout_times) {
                     connection.close();
                     Logs.HB.warn("client heartbeat timeout times={}, do close conn={}", timeoutTimes, connection);
                     return;

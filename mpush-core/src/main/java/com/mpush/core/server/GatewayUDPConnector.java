@@ -23,12 +23,12 @@ import com.mpush.api.connection.Connection;
 import com.mpush.api.protocol.Command;
 import com.mpush.common.MessageDispatcher;
 import com.mpush.core.MPushServer;
+import com.mpush.core.handler.GatewayGroupHandler;
 import com.mpush.core.handler.GatewayKickUserHandler;
 import com.mpush.core.handler.GatewayPushHandler;
-import com.mpush.netty.udp.UDPChannelHandler;
 import com.mpush.netty.udp.NettyUDPConnector;
+import com.mpush.netty.udp.UDPChannelHandler;
 import com.mpush.tools.Utils;
-import com.mpush.tools.config.IConfig;
 import com.mpush.tools.config.IConfig.mp.net.rcv_buf;
 import com.mpush.tools.config.IConfig.mp.net.snd_buf;
 import io.netty.bootstrap.Bootstrap;
@@ -36,6 +36,8 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelOption;
 
 import static com.mpush.common.MessageDispatcher.POLICY_LOG;
+import static com.mpush.tools.config.IConfig.mp.net.gateway_server_multicast;
+import static com.mpush.tools.config.IConfig.mp.net.gateway_server_port;
 
 /**
  * Created by ohun on 2015/12/30.
@@ -49,7 +51,7 @@ public final class GatewayUDPConnector extends NettyUDPConnector {
     private MPushServer mPushServer;
 
     public GatewayUDPConnector(MPushServer mPushServer) {
-        super(IConfig.mp.net.gateway_server_port);
+        super(gateway_server_port);
         this.mPushServer = mPushServer;
         this.messageDispatcher = new MessageDispatcher(POLICY_LOG);
         this.channelHandler = new UDPChannelHandler(messageDispatcher);
@@ -60,7 +62,8 @@ public final class GatewayUDPConnector extends NettyUDPConnector {
         super.init();
         messageDispatcher.register(Command.GATEWAY_PUSH, () -> new GatewayPushHandler(mPushServer.getPushCenter()));
         messageDispatcher.register(Command.GATEWAY_KICK, () -> new GatewayKickUserHandler(mPushServer.getRouterCenter()));
-        channelHandler.setMulticastAddress(Utils.getInetAddress(IConfig.mp.net.gateway_server_multicast));
+        messageDispatcher.register(Command.GATEWAY_GROUP, () -> new GatewayGroupHandler(mPushServer.getRouterCenter()));
+        channelHandler.setMulticastAddress(Utils.getInetAddress(gateway_server_multicast));
         channelHandler.setNetworkInterface(Utils.getLocalNetworkInterface());
     }
 
@@ -71,8 +74,12 @@ public final class GatewayUDPConnector extends NettyUDPConnector {
         b.option(ChannelOption.IP_MULTICAST_TTL, 255);//选项IP_MULTICAST_TTL允许设置超时TTL，范围为0～255之间的任何值
         //b.option(ChannelOption.IP_MULTICAST_IF, null);//选项IP_MULTICAST_IF用于设置组播的默认网络接口，会从给定的网络接口发送，另一个网络接口会忽略此数据,参数addr是希望多播输出接口的IP地址，使用INADDR_ANY地址回送到默认接口。
         //b.option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(32 * 1024, 1024 * 1024));
-        if (snd_buf.gateway_server > 0) b.option(ChannelOption.SO_SNDBUF, snd_buf.gateway_server);
-        if (rcv_buf.gateway_server > 0) b.option(ChannelOption.SO_RCVBUF, rcv_buf.gateway_server);
+        if (snd_buf.gateway_server > 0) {
+            b.option(ChannelOption.SO_SNDBUF, snd_buf.gateway_server);
+        }
+        if (rcv_buf.gateway_server > 0) {
+            b.option(ChannelOption.SO_RCVBUF, rcv_buf.gateway_server);
+        }
     }
 
     @Override

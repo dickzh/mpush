@@ -63,7 +63,9 @@ public class PushClientTestMain2 {
         for (int k = 0; k < 1000; k++) {
             for (int i = 0; i < 1; i++) {
 
-                while (service.getQueue().size() > 1000) Thread.sleep(1); // 防止内存溢出
+                while (service.getQueue().size() > 1000) {
+                    Thread.sleep(1); // 防止内存溢出
+                }
 
                 PushMsg msg = PushMsg.build(MsgType.MESSAGE, "this a first push.");
                 msg.setMsgId("msgId_" + i);

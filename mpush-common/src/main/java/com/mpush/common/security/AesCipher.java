@@ -65,7 +65,9 @@ public final class AesCipher implements Cipher {
     public String toString(byte[] a) {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < a.length; i++) {
-            if (i != 0) b.append('|');
+            if (i != 0) {
+                b.append('|');
+            }
             b.append(a[i]);
         }
         return b.toString();

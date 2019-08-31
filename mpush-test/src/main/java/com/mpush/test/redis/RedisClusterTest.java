@@ -22,14 +22,10 @@ package com.mpush.test.redis;
 import com.mpush.tools.Jsons;
 import com.mpush.tools.config.data.RedisNode;
 import io.lettuce.core.RedisURI;
-import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.cluster.RedisClusterClient;
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands;
-import io.lettuce.core.support.ConnectionPoolSupport;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,7 +48,7 @@ public class RedisClusterTest {
 
         List<RedisURI> nodeList = new ArrayList<>();
         for (RedisNode node : jedisClusterNodes) {
-            RedisURI.Builder builder = RedisURI.builder().redis(node.getHost(), node.getPort());
+            RedisURI.Builder builder = RedisURI.Builder.redis(node.getHost(), node.getPort());
             nodeList.add(builder.build());
         }
 

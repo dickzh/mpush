@@ -64,9 +64,15 @@ public final class OkMessage extends ByteBufMessage {
     @Override
     public Map<String, Object> encodeJsonBody() {
         Map<String, Object> body = new HashMap<>(3);
-        if (cmd > 0) body.put("cmd", cmd);
-        if (code > 0) body.put("code", code);
-        if (data != null) body.put("data", data);
+        if (cmd > 0) {
+            body.put("cmd", cmd);
+        }
+        if (code > 0) {
+            body.put("code", code);
+        }
+        if (data != null) {
+            body.put("data", data);
+        }
         return body;
     }
 

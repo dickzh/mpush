@@ -71,7 +71,9 @@ public class RemoteRouterManager extends EventConsumer implements RouterManager<
         String key = CacheKeys.getUserRouteKey(userId);
         String field = Integer.toString(clientType);
         ClientLocation location = cacheManager.hget(key, field, ClientLocation.class);
-        if (location == null || location.isOffline()) return true;
+        if (location == null || location.isOffline()) {
+            return true;
+        }
         cacheManager.hset(key, field, location.offline().toJson());
         logger.info("unRegister remote router success userId={}, route={}", userId, location);
         return true;
@@ -81,7 +83,9 @@ public class RemoteRouterManager extends EventConsumer implements RouterManager<
     public Set<RemoteRouter> lookupAll(String userId) {
         String key = CacheKeys.getUserRouteKey(userId);
         Map<String, ClientLocation> values = cacheManager.hgetAll(key, ClientLocation.class);
-        if (values == null || values.isEmpty()) return Collections.emptySet();
+        if (values == null || values.isEmpty()) {
+            return Collections.emptySet();
+        }
         return values.values().stream().map(RemoteRouter::new).collect(Collectors.toSet());
     }
 
@@ -103,14 +107,20 @@ public class RemoteRouterManager extends EventConsumer implements RouterManager<
     @AllowConcurrentEvents
     void onConnectionConnectEvent(ConnectionCloseEvent event) {
         Connection connection = event.connection;
-        if (connection == null) return;
+        if (connection == null) {
+            return;
+        }
         SessionContext context = connection.getSessionContext();
         String userId = context.userId;
-        if (userId == null) return;
+        if (userId == null) {
+            return;
+        }
         String key = CacheKeys.getUserRouteKey(userId);
         String field = Integer.toString(context.getClientType());
         ClientLocation location = cacheManager.hget(key, field, ClientLocation.class);
-        if (location == null || location.isOffline()) return;
+        if (location == null || location.isOffline()) {
+            return;
+        }
 
         String connId = connection.getId();
         //2.检测下，是否是同一个链接, 如果客户端重连，老的路由会被新的链接覆盖

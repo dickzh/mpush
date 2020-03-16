@@ -4,6 +4,14 @@ name: default
 steps:
 - name: test
   image: maven:3.6.3-jdk-8-slim
+  volumes:
+    - name: m2repo
+      path: /root/.m2
   commands:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - mvn test -B
+
+volumes:
+  - name: m2repo # The name use in this pipeline,
+    host:
+      path: /home/dkzhang/.m2

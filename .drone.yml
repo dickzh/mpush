@@ -8,10 +8,12 @@ steps:
     - name: m2repo
       path: /root/.m2
   commands:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
   - mvn test -B
+  - mvn clean
 
 volumes:
   - name: m2repo # The name use in this pipeline,
     host:
       path: /home/dkzhang/.m2
+

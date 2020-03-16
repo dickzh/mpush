@@ -15,5 +15,3 @@ volumes:
   - name: m2repo # The name use in this pipeline,
     host:
       path: /var/lib/maven/.m2
-
-

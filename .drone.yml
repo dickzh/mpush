@@ -15,5 +15,5 @@ steps:
 volumes:
   - name: m2repo # The name use in this pipeline,
     host:
-      path: /home/dkzhang/.m2
+      path: /var/lib/maven/.m2
 

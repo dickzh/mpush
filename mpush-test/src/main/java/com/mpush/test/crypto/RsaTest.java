@@ -22,6 +22,7 @@ package com.mpush.test.crypto;
 import com.mpush.common.message.HandshakeMessage;
 import com.mpush.common.security.CipherBox;
 import com.mpush.tools.crypto.RSAUtils;
+import com.mpush.tools.thread.NamedPoolThreadFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,6 +31,10 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
+import static com.mpush.tools.thread.ThreadNames.T_TRAFFIC_SHAPING;
+import static com.mpush.tools.thread.ThreadNames.T_WORKER;
 
 public class RsaTest {
 
@@ -77,7 +82,7 @@ public class RsaTest {
     @Test
     public void mulTest() {
 
-        Executor pool = Executors.newFixedThreadPool(20);
+        Executor pool = new ScheduledThreadPoolExecutor(20, new NamedPoolThreadFactory(T_WORKER));
 
         CountDownLatch encodeLatch = new CountDownLatch(1);
         CountDownLatch decodeLatch = new CountDownLatch(1);

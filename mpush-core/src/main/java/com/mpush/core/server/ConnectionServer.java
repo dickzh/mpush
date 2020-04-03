@@ -42,12 +42,14 @@ import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import static com.mpush.tools.config.IConfig.mp.net.connect_server_bind_ip;
 import static com.mpush.tools.config.IConfig.mp.net.connect_server_port;
 import static com.mpush.tools.config.IConfig.mp.net.traffic_shaping.connect_server.*;
 import static com.mpush.tools.config.IConfig.mp.net.write_buffer_water_mark.connect_server_high;
 import static com.mpush.tools.config.IConfig.mp.net.write_buffer_water_mark.connect_server_low;
+import static com.mpush.tools.thread.ThreadNames.T_CONN_WORKER;
 import static com.mpush.tools.thread.ThreadNames.T_TRAFFIC_SHAPING;
 
 /**
@@ -86,7 +88,8 @@ public final class ConnectionServer extends NettyTCPServer {
         messageDispatcher.register(Command.HTTP_PROXY, () -> new HttpProxyHandler(mPushServer), IConfig.mp.http.proxy_enabled);
 
         if (enabled) {//启用流量整形，限流
-            trafficShapingExecutor = Executors.newSingleThreadScheduledExecutor(new NamedPoolThreadFactory(T_TRAFFIC_SHAPING));
+
+            trafficShapingExecutor = new ScheduledThreadPoolExecutor(1, new NamedPoolThreadFactory(T_TRAFFIC_SHAPING));
             trafficShapingHandler = new GlobalChannelTrafficShapingHandler(
                     trafficShapingExecutor,
                     write_global_limit, read_global_limit,

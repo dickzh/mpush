@@ -42,10 +42,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.mpush.api.srd.ServiceNames.DNS_MAPPING;
 import static com.mpush.tools.Utils.checkHealth;
+import static com.mpush.tools.thread.ThreadNames.T_HTTP_DNS_TIMER;
+import static com.mpush.tools.thread.ThreadNames.T_TRAFFIC_SHAPING;
 
 @Spi(order = 1)
 public class HttpProxyDnsMappingManager extends BaseService implements DnsMappingManager, Runnable, ServiceListener {
@@ -65,8 +68,7 @@ public class HttpProxyDnsMappingManager extends BaseService implements DnsMappin
         discovery.lookup(DNS_MAPPING).forEach(this::add);
 
         if (all.size() > 0) {
-            executorService = Executors.newSingleThreadScheduledExecutor(
-                    new NamedPoolThreadFactory(ThreadNames.T_HTTP_DNS_TIMER)
+            executorService = new ScheduledThreadPoolExecutor(1, new NamedPoolThreadFactory(T_HTTP_DNS_TIMER)
             );
             executorService.scheduleAtFixedRate(this, 1, 20, TimeUnit.SECONDS); //20秒 定时扫描dns
         }

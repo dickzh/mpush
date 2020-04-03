@@ -24,14 +24,19 @@ import com.mpush.client.connect.ClientConfig;
 import com.mpush.client.connect.ConnClientChannelHandler;
 import com.mpush.common.security.CipherBox;
 import com.mpush.tools.log.Logs;
+import com.mpush.tools.thread.NamedPoolThreadFactory;
 import io.netty.channel.ChannelFuture;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
+
+import static com.mpush.tools.thread.ThreadNames.T_CONN_WORKER;
+import static com.mpush.tools.thread.ThreadNames.T_WORKER;
 
 public class ConnClientTestMain {
 
@@ -79,7 +84,7 @@ public class ConnClientTestMain {
         }
 
         if (printDelay > 0) {
-            Executors.newSingleThreadScheduledExecutor()
+            new ScheduledThreadPoolExecutor(1, new NamedPoolThreadFactory(T_CONN_WORKER))
                     .scheduleAtFixedRate(
                             () -> System.err.println(ConnClientChannelHandler.STATISTICS)
                             , 3, printDelay, TimeUnit.SECONDS

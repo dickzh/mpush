@@ -52,13 +52,13 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
                         <version>3.0.2</version>
                         <configuration>
                             <archive>
                                 <!--生成的jar中，不要包含pom.xml和pom.properties这两个文件-->
                                 <addMavenDescriptor>false</addMavenDescriptor>
-
                                 <manifest>
                                     <!--是否要把第三方jar放到manifest的classpath中-->
                                     <addClasspath>true</addClasspath>
@@ -77,19 +77,18 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.6</version>
-                        <configuration>
-                            <finalName>mpush</finalName>
-                            <descriptors>
-                                <descriptor>assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
                         <executions>
                             <execution>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
+                                <configuration>
+                                    <finalName>mpush</finalName>
+                                    <descriptors>
+                                        <descriptor>assembly.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

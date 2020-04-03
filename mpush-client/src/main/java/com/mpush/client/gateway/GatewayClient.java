@@ -40,6 +40,7 @@ import io.netty.handler.traffic.GlobalChannelTrafficShapingHandler;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import static com.mpush.tools.config.IConfig.mp.net.*;
 import static com.mpush.tools.config.IConfig.mp.net.traffic_shaping.gateway_client.*;
@@ -65,7 +66,7 @@ public class GatewayClient extends NettyTCPClient {
         connectionManager = new NettyConnectionManager();
         handler = new GatewayClientChannelHandler(connectionManager, messageDispatcher);
         if (enabled) {
-            trafficShapingExecutor = Executors.newSingleThreadScheduledExecutor(new NamedPoolThreadFactory(T_TRAFFIC_SHAPING));
+            trafficShapingExecutor = new ScheduledThreadPoolExecutor(1, new NamedPoolThreadFactory(T_TRAFFIC_SHAPING));
             trafficShapingHandler = new GlobalChannelTrafficShapingHandler(
                     trafficShapingExecutor,
                     write_global_limit, read_global_limit,

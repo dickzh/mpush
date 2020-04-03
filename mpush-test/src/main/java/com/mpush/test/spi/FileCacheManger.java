@@ -23,6 +23,8 @@ import com.mpush.api.Constants;
 import com.mpush.api.spi.common.CacheManager;
 import com.mpush.tools.Jsons;
 import com.mpush.tools.log.Logs;
+import com.mpush.tools.thread.NamedPoolThreadFactory;
+import com.mpush.tools.thread.ThreadNames;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,10 +33,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
+import static com.mpush.tools.thread.ThreadNames.T_TRAFFIC_SHAPING;
+import static com.mpush.tools.thread.ThreadNames.T_WORKER;
 
 /**
  * Created by ohun on 2016/12/28.
@@ -45,7 +47,8 @@ import java.util.concurrent.TimeUnit;
 public final class FileCacheManger implements CacheManager {
     public static final FileCacheManger instance = new FileCacheManger();
     private Map<String, Object> cache = new ConcurrentHashMap<>();
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService executor =
+            new ScheduledThreadPoolExecutor(1, new NamedPoolThreadFactory(T_WORKER));;
     private long lastModified = 0;
     private Path cacheFile;
 
